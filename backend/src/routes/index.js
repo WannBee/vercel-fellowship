@@ -10,18 +10,29 @@ const r = Router();
 const w = (fn) => (req, res, next) => fn(req, res).catch(next); // tangkap error async
 
 r.get("/health", async (_req, res) => {
+  let target = "DATABASE_URL kosong";
+  try {
+    const u = new URL(process.env.DATABASE_URL);
+    target = {
+      host: u.hostname,
+      port: u.port,
+      user: u.username.split(".")[0] + (u.username.includes(".") ? ".…" : ""),
+    };
+  } catch {
+    /* biarkan */
+  }
   try {
     const t = await pool.query(
       "SELECT to_regclass('public.users') AS users_table, to_regclass('public.participants') AS participants_table",
     );
     res.json({
       db: "ok",
+      target,
       ...t.rows[0],
       hasJwtSecret: !!process.env.JWT_SECRET,
-      hasClientUrl: !!process.env.CLIENT_URL,
     });
   } catch (e) {
-    res.status(500).json({ db: "error", message: e.message });
+    res.status(500).json({ db: "error", message: e.message, target });
   }
 });
 
