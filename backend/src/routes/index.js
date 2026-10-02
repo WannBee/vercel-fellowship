@@ -4,9 +4,26 @@ import { auth, requireRole } from "../middleware/auth.js";
 import * as a from "../controllers/authController.js";
 import * as u from "../controllers/userController.js";
 import * as p from "../controllers/participantController.js";
+import { pool } from "../config/db.js";
 
 const r = Router();
 const w = (fn) => (req, res, next) => fn(req, res).catch(next); // tangkap error async
+
+r.get("/health", async (_req, res) => {
+  try {
+    const t = await pool.query(
+      "SELECT to_regclass('public.users') AS users_table, to_regclass('public.participants') AS participants_table",
+    );
+    res.json({
+      db: "ok",
+      ...t.rows[0],
+      hasJwtSecret: !!process.env.JWT_SECRET,
+      hasClientUrl: !!process.env.CLIENT_URL,
+    });
+  } catch (e) {
+    res.status(500).json({ db: "error", message: e.message });
+  }
+});
 
 r.post("/auth/register", w(a.register));
 r.post("/auth/login", w(a.login));
