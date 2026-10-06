@@ -22,17 +22,17 @@ r.get("/health", async (_req, res) => {
     /* biarkan */
   }
   try {
-    const t = await pool.query(
-      "SELECT to_regclass('public.users') AS users_table, to_regclass('public.participants') AS participants_table",
-    );
-    res.json({
-      db: "ok",
-      target,
-      ...t.rows[0],
-      hasJwtSecret: !!process.env.JWT_SECRET,
-    });
-  } catch (e) {
-    res.status(500).json({ db: "error", message: e.message, target });
+    const u = new URL(process.env.DATABASE_URL);
+    const pw = process.env.DB_PASSWORD ?? decodeURIComponent(u.password);
+    target = {
+      host: u.hostname,
+      port: u.port,
+      user: u.username.split(".")[0] + ".…",
+      passwordLength: pw.length,
+      suspicious: /[\s\[\]"']/.test(pw), // spasi, kurung siku, atau tanda kutip
+    };
+  } catch {
+    /* biarkan */
   }
 });
 
