@@ -9,6 +9,7 @@ import {
   LogOut,
   UserCircle,
   ShieldCheck,
+  Globe,
   X,
 } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
@@ -123,6 +124,7 @@ export default function Sidebar({ open, onClose }) {
             {accountItem("/profile", UserCircle, "Profil")}
             {user.role === "admin" &&
               accountItem("/roles", ShieldCheck, "Manajemen Role")}
+            {accountItem("/", Globe, "Halaman Publik")}
           </nav>
         </div>
         <div className="p-4 border-t border-slate-800">
