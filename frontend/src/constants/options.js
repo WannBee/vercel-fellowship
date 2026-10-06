@@ -74,5 +74,5 @@ export const STATUS_LABEL = {
   "akan pendidikan": "Peserta Fellowship yang Akan Pendidikan",
   "sedang pendidikan": "Peserta Fellowship yang Sedang Pendidikan",
   cuti: "Cuti",
-  "telah lulus": "Telah Lulus",
+  "Jumlah Lulusan": "Jumlah Lulusan",
 };
