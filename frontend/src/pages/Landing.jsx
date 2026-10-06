@@ -41,36 +41,39 @@ const TONES = {
   amber: "bg-amber-50 text-amber-600",
   rose: "bg-rose-50 text-rose-600",
 };
-// Komponen didefinisikan di luar fungsi utama agar tidak dibuat ulang tiap render
-const Section = ({ title, desc, children }) => (
+const Section = ({ title, desc, children, onDark = false }) => (
   <section className="space-y-5">
     <div>
       <div className="flex items-center gap-3">
-        <span className="w-1.5 h-7 rounded-full bg-gradient-to-b from-indigo-500 to-purple-600" />
-        <h2 className="text-xl sm:text-2xl font-bold text-white">{title}</h2>
+        <span
+          className={`w-1.5 h-7 rounded-full ${onDark ? "bg-white/80" : "bg-gradient-to-b from-indigo-500 to-purple-600"}`}
+        />
+        <h2
+          className={`text-xl sm:text-2xl font-bold ${onDark ? "text-white" : "text-slate-800"}`}
+        >
+          {title}
+        </h2>
       </div>
-      <p className="text-sm text-white mt-2 max-w-3xl">{desc}</p>
+      <p
+        className={`text-sm mt-2 max-w-3xl ${onDark ? "text-indigo-100" : "text-slate-500"}`}
+      >
+        {desc}
+      </p>
     </div>
     {children}
   </section>
 );
-const BigCard = ({ label, value, icon: Icon, tone, featured }) => (
-  <div
-    className={`rounded-2xl p-5 border shadow-sm transition-all hover:shadow-lg hover:-translate-y-1 ${featured ? "bg-gradient-to-br from-indigo-600 to-purple-700 text-white border-transparent" : "bg-white border-slate-200"}`}
-  >
+const BigCard = ({ label, value, icon: Icon, tone = "indigo" }) => (
+  <div className="group rounded-2xl p-5 border border-slate-200 bg-white shadow-sm cursor-default transition-all duration-300 hover:shadow-lg hover:-translate-y-1 hover:border-transparent hover:bg-gradient-to-br hover:from-indigo-600 hover:to-purple-700">
     <div
-      className={`w-11 h-11 rounded-xl flex items-center justify-center ${featured ? "bg-white/20 text-white" : TONES[tone]}`}
+      className={`w-11 h-11 rounded-xl flex items-center justify-center transition-colors duration-300 group-hover:bg-white/20 group-hover:text-white ${TONES[tone]}`}
     >
       <Icon className="w-6 h-6" />
     </div>
-    <p
-      className={`text-3xl font-bold mt-4 ${featured ? "text-white" : "text-slate-800"}`}
-    >
+    <p className="text-3xl font-bold mt-4 text-slate-800 transition-colors duration-300 group-hover:text-white">
       {value ?? "–"}
     </p>
-    <p
-      className={`text-sm mt-1 leading-snug ${featured ? "text-indigo-100" : "text-slate-500"}`}
-    >
+    <p className="text-sm mt-1 leading-snug text-slate-500 transition-colors duration-300 group-hover:text-indigo-100">
       {label}
     </p>
   </div>
@@ -197,7 +200,7 @@ export default function Landing() {
         )}
 
         <div className="-mt-20">
-          <Section title="Peserta Fellowship" desc={LOREM}>
+          <Section onDark title="Peserta Fellowship" desc={LOREM}>
             <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
               <div className="col-span-2 lg:col-span-1">
                 <BigCard
