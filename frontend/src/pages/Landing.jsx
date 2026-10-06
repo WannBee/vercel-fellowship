@@ -47,11 +47,9 @@ const Section = ({ title, desc, children }) => (
     <div>
       <div className="flex items-center gap-3">
         <span className="w-1.5 h-7 rounded-full bg-gradient-to-b from-indigo-500 to-purple-600" />
-        <h2 className="text-xl sm:text-2xl font-bold text-slate-800">
-          {title}
-        </h2>
+        <h2 className="text-xl sm:text-2xl font-bold text-white">{title}</h2>
       </div>
-      <p className="text-sm text-slate-500 mt-2 max-w-3xl">{desc}</p>
+      <p className="text-sm text-white mt-2 max-w-3xl">{desc}</p>
     </div>
     {children}
   </section>
