@@ -44,13 +44,19 @@ export async function list(req, res) {
 }
 
 export async function stats(_req, res) {
-  const { rows } = await pool.query(
-    "SELECT status, COUNT(*)::int AS total FROM participants GROUP BY status",
-  );
-  const out = { total: 0 };
-  for (const r of rows) {
-    out[r.status] = r.total;
-    out.total += r.total;
-  }
-  res.json(out);
+  // nama kolom di bawah literal tetap (bukan input user), jadi aman
+  const count = async (col) => {
+    const { rows } = await pool.query(
+      `SELECT ${col} AS k, COUNT(*)::int AS n FROM participants WHERE ${col} IS NOT NULL GROUP BY ${col}`,
+    );
+    return Object.fromEntries(rows.map((r) => [r.k, r.n]));
+  };
+  const [status, funding, ksm, fellowship] = await Promise.all([
+    count("status"),
+    count("funding"),
+    count("ksm"),
+    count("fellowship"),
+  ]);
+  const total = Object.values(status).reduce((a, b) => a + b, 0);
+  res.json({ total, status, funding, ksm, fellowship });
 }
