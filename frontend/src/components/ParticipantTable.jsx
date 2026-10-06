@@ -7,8 +7,10 @@ import {
   MapPin,
   Calendar,
   Award,
+  Wallet,
 } from "lucide-react";
 import { STATUS } from "../constants/options";
+import { formatPeriod } from "../utils/FormatDate";
 
 const badge = {
   "akan pendidikan": "bg-blue-100 text-blue-700 border-blue-200",
@@ -95,8 +97,9 @@ export default function ParticipantTable({
             </Meta>
             <Meta icon={MapPin}>{p.province}</Meta>
             <Meta icon={Calendar} cls="text-slate-600 font-medium">
-              {p.period}
+              {formatPeriod(p.period_start, p.period_end)}
             </Meta>
+            <Meta icon={Wallet}>{p.funding || "-"}</Meta>
             <div className="mt-3 pt-3 border-t border-slate-100">
               <StatusSelect p={p} onChange={onStatusChange} />
             </div>
@@ -113,7 +116,7 @@ export default function ParticipantTable({
                 "Identitas & Kontak",
                 "KSM / Fellowship",
                 "Asal RS & Provinsi",
-                "Periode",
+                "Periode & Biaya",
                 "Status",
               ].map((h) => (
                 <th key={h} className="py-4 px-6">
@@ -143,8 +146,9 @@ export default function ParticipantTable({
                 </td>
                 <td className="py-4 px-6">
                   <Meta icon={Calendar} cls="text-slate-600 font-medium">
-                    {p.period}
+                    {formatPeriod(p.period_start, p.period_end)}
                   </Meta>
+                  <Meta icon={Wallet}>{p.funding || "-"}</Meta>
                 </td>
                 <td className="py-4 px-6">
                   <StatusSelect p={p} onChange={onStatusChange} />

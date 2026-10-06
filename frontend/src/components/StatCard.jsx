@@ -9,17 +9,17 @@ export default function StatCard({ title, count, icon: Icon, color, onClick }) {
   return (
     <div
       onClick={onClick}
-      className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm cursor-pointer transition-all hover:shadow-md hover:-translate-y-0.5"
+      className="h-full bg-white p-5 rounded-2xl border border-slate-200 shadow-sm cursor-pointer transition-all hover:shadow-md hover:-translate-y-0.5"
     >
-      <div className="flex items-center justify-between">
-        <div>
-          <p className="text-sm font-medium text-slate-500 capitalize">
+      <div className="flex items-center justify-between gap-3">
+        <div className="min-w-0">
+          <p className="text-sm font-medium text-slate-500 leading-snug">
             {title}
           </p>
           <h3 className="text-2xl font-bold text-slate-800 mt-1">{count}</h3>
         </div>
         <div
-          className={`p-3 rounded-xl border ${colors[color] || colors.indigo}`}
+          className={`p-3 rounded-xl border shrink-0 ${colors[color] || colors.indigo}`}
         >
           <Icon className="w-6 h-6" />
         </div>

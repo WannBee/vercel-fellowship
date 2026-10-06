@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { X } from "lucide-react";
-import { KSM, FELLOWSHIP, STATUS } from "../constants/options";
+import { KSM, FELLOWSHIP, STATUS, FUNDING } from "../constants/options";
+import { errMsg } from "../services/api";
 
 const EMPTY = {
   name: "",
@@ -10,22 +11,37 @@ const EMPTY = {
   hospital: "",
   province: "",
   fellowship: FELLOWSHIP[0],
-  period: "2026/2027",
+  funding: FUNDING[0],
+  period_start: "",
+  period_end: "",
   status: "akan pendidikan",
 };
+const fromRow = (p) => ({
+  ...EMPTY,
+  ...p,
+  funding: p.funding || FUNDING[0],
+  period_start: p.period_start || "",
+  period_end: p.period_end || "",
+});
 const cls =
   "w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500";
 
-// Komponen di LUAR fungsi utama agar tidak dibuat ulang setiap render
+// Komponen di LUAR fungsi utama agar input tidak kehilangan fokus
 const Label = ({ children }) => (
   <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1">
     {children}
   </label>
 );
-const Input = ({ f, set, k, label, ...r }) => (
+const Input = ({ f, set, k, label, onChange, ...r }) => (
   <div>
     <Label>{label}</Label>
-    <input required value={f[k]} onChange={set(k)} className={cls} {...r} />
+    <input
+      required
+      value={f[k]}
+      onChange={onChange || set(k)}
+      className={cls}
+      {...r}
+    />
   </div>
 );
 const Sel = ({ f, set, k, label, opts }) => (
@@ -47,19 +63,33 @@ export default function ParticipantModal({
 }) {
   const [f, setF] = useState(EMPTY);
   const [saving, setSaving] = useState(false);
+  const [err, setErr] = useState("");
 
   useEffect(() => {
-    setF(participantToEdit || EMPTY);
+    setF(participantToEdit ? fromRow(participantToEdit) : EMPTY);
+    setErr("");
   }, [participantToEdit, isOpen]);
   if (!isOpen) return null;
 
   const set = (k) => (e) => setF({ ...f, [k]: e.target.value });
+  // Kalau tanggal mulai digeser melewati tanggal selesai, tanggal selesai ikut menyesuaikan
+  const setStart = (e) => {
+    const v = e.target.value;
+    setF({
+      ...f,
+      period_start: v,
+      period_end: f.period_end && f.period_end < v ? v : f.period_end,
+    });
+  };
   const submit = async (e) => {
     e.preventDefault();
     setSaving(true);
+    setErr("");
     try {
       await onSave(f);
       onClose();
+    } catch (x) {
+      setErr(errMsg(x));
     } finally {
       setSaving(false);
     }
@@ -83,6 +113,11 @@ export default function ParticipantModal({
           onSubmit={submit}
           className="p-6 space-y-4 max-h-[75vh] overflow-y-auto"
         >
+          {err && (
+            <div className="p-3 bg-rose-50 border border-rose-200 text-rose-600 text-sm rounded-xl">
+              {err}
+            </div>
+          )}
           <Input
             f={f}
             set={set}
@@ -128,12 +163,12 @@ export default function ParticipantModal({
               label="Provinsi"
               placeholder="Jawa Timur"
             />
-            <Input
+            <Sel
               f={f}
               set={set}
-              k="period"
-              label="Periode"
-              placeholder="2026/2027"
+              k="funding"
+              label="Sumber Biaya"
+              opts={FUNDING}
             />
             <Sel
               f={f}
@@ -141,6 +176,22 @@ export default function ParticipantModal({
               k="status"
               label="Status Pelatihan"
               opts={STATUS}
+            />
+            <Input
+              f={f}
+              set={set}
+              k="period_start"
+              type="date"
+              label="Periode Mulai"
+              onChange={setStart}
+            />
+            <Input
+              f={f}
+              set={set}
+              k="period_end"
+              type="date"
+              label="Periode Selesai"
+              min={f.period_start || undefined}
             />
           </div>
           <div className="pt-4 flex justify-end gap-3 border-t border-slate-100">

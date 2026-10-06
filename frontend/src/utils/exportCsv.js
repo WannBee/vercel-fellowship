@@ -6,7 +6,9 @@ const COLS = [
   ["fellowship", "Fellowship"],
   ["hospital", "Asal RS"],
   ["province", "Provinsi"],
-  ["period", "Periode"],
+  ["funding", "Sumber Biaya"],
+  ["period_start", "Periode Mulai"],
+  ["period_end", "Periode Selesai"],
   ["status", "Status"],
 ];
 export function exportCsv(rows, filename = "partisipan.csv") {

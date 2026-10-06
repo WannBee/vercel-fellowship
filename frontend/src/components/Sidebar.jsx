@@ -13,16 +13,25 @@ import {
 } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { useParticipants } from "../context/ParticipantsContext";
+import { ALL_LABEL, STATUS_LABEL } from "../constants/options";
 
 const MENU = [
-  { key: "Semua", label: "Semua Anggota", icon: LayoutDashboard },
-  { key: "akan pendidikan", label: "Akan Pendidikan", icon: UserPlus },
-  { key: "sedang pendidikan", label: "Sedang Pendidikan", icon: PlayCircle },
-  { key: "cuti", label: "Cuti", icon: Clock },
-  { key: "telah lulus", label: "Telah Lulus", icon: CheckCircle },
+  { key: "Semua", label: ALL_LABEL, icon: LayoutDashboard },
+  {
+    key: "akan pendidikan",
+    label: STATUS_LABEL["akan pendidikan"],
+    icon: UserPlus,
+  },
+  {
+    key: "sedang pendidikan",
+    label: STATUS_LABEL["sedang pendidikan"],
+    icon: PlayCircle,
+  },
+  { key: "cuti", label: STATUS_LABEL.cuti, icon: Clock },
+  { key: "telah lulus", label: STATUS_LABEL["telah lulus"], icon: CheckCircle },
 ];
 const base =
-  "w-full flex items-center justify-between px-4 py-3 rounded-xl text-sm font-medium transition-all";
+  "w-full flex items-center justify-between gap-2 px-4 py-3 rounded-xl text-sm font-medium transition-all";
 const on = "bg-indigo-600 text-white shadow-lg shadow-indigo-600/30";
 const off = "hover:bg-slate-800/60 text-slate-400 hover:text-slate-200";
 
@@ -36,8 +45,8 @@ export default function Sidebar({ open, onClose }) {
 
   const go = (to) => {
     nav(to);
-    onClose();
-  }; // tutup menu setelah klik (mobile)
+    onClose?.();
+  };
   const goStatus = (key) =>
     go(
       key === "Semua"
@@ -57,7 +66,7 @@ export default function Sidebar({ open, onClose }) {
       className={`${base} ${pathname === to ? on : off}`}
     >
       <span className="flex items-center gap-3">
-        <Icon className="w-5 h-5" />
+        <Icon className="w-5 h-5 shrink-0" />
         {label}
       </span>
     </button>
@@ -72,7 +81,7 @@ export default function Sidebar({ open, onClose }) {
         />
       )}
       <aside
-        className={`fixed inset-y-0 left-0 z-40 w-64 transform transition-transform duration-200 ${open ? "translate-x-0" : "-translate-x-full"} md:static md:translate-x-0 bg-slate-900 text-slate-300 flex flex-col justify-between shrink-0 border-r border-slate-800`}
+        className={`fixed inset-y-0 left-0 z-40 w-72 transform transition-transform duration-200 ${open ? "translate-x-0" : "-translate-x-full"} md:static md:translate-x-0 bg-slate-900 text-slate-300 flex flex-col justify-between shrink-0 border-r border-slate-800`}
       >
         <div className="overflow-y-auto">
           <div className="p-6 border-b border-slate-800 flex items-start justify-between">
@@ -100,12 +109,12 @@ export default function Sidebar({ open, onClose }) {
                 onClick={() => goStatus(key)}
                 className={`${base} ${active === key ? on : off}`}
               >
-                <span className="flex items-center gap-3">
-                  <Icon className="w-5 h-5" />
+                <span className="flex items-center gap-3 text-left leading-snug">
+                  <Icon className="w-5 h-5 shrink-0" />
                   {label}
                 </span>
                 <span
-                  className={`px-2.5 py-0.5 rounded-full text-xs font-semibold ${active === key ? "bg-indigo-700" : "bg-slate-800 text-slate-400"}`}
+                  className={`px-2.5 py-0.5 rounded-full text-xs font-semibold shrink-0 ${active === key ? "bg-indigo-700" : "bg-slate-800 text-slate-400"}`}
                 >
                   {counts[key]}
                 </span>

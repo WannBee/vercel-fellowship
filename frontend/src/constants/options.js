@@ -67,3 +67,12 @@ export const FELLOWSHIP = [
   "Infeksi dan Tumor Rongga Toraks",
   "Onkologi Intervensional",
 ];
+
+export const FUNDING = ["Biaya Kemkes", "Pribadi", "Kemkes dan LPDP"];
+export const ALL_LABEL = "Total Peserta Fellowship";
+export const STATUS_LABEL = {
+  "akan pendidikan": "Peserta Fellowship yang Akan Pendidikan",
+  "sedang pendidikan": "Peserta Fellowship yang Sedang Pendidikan",
+  cuti: "Cuti",
+  "telah lulus": "Telah Lulus",
+};

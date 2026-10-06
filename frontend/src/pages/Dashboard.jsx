@@ -14,18 +14,23 @@ import {
 } from "lucide-react";
 import { useParticipants } from "../context/ParticipantsContext";
 import { errMsg } from "../services/api";
-import { KSM } from "../constants/options";
+import { KSM, ALL_LABEL, STATUS_LABEL } from "../constants/options";
 import { exportCsv } from "../utils/exportCsv";
 import StatCard from "../components/StatCard";
 import ParticipantTable from "../components/ParticipantTable";
 import ParticipantModal from "../components/ParticipantModal";
 
 const CARDS = [
-  ["Semua", "Semua Anggota", LayoutDashboard, "indigo"],
-  ["akan pendidikan", "Akan Pendidikan", UserPlus, "blue"],
-  ["sedang pendidikan", "Sedang Pendidikan", PlayCircle, "purple"],
-  ["cuti", "Cuti", Clock, "amber"],
-  ["telah lulus", "Telah Lulus", CheckCircle, "emerald"],
+  ["Semua", ALL_LABEL, LayoutDashboard, "indigo"],
+  ["akan pendidikan", STATUS_LABEL["akan pendidikan"], UserPlus, "blue"],
+  [
+    "sedang pendidikan",
+    STATUS_LABEL["sedang pendidikan"],
+    PlayCircle,
+    "purple",
+  ],
+  ["cuti", STATUS_LABEL.cuti, Clock, "amber"],
+  ["telah lulus", STATUS_LABEL["telah lulus"], CheckCircle, "emerald"],
 ];
 const PER_PAGE = 10;
 
@@ -43,7 +48,7 @@ export default function Dashboard() {
     (r) =>
       (filter === "Semua" || r.status === filter) &&
       (!ksm || r.ksm === ksm) &&
-      `${r.name} ${r.email} ${r.hospital} ${r.province} ${r.fellowship}`
+      `${r.name} ${r.email} ${r.hospital} ${r.province} ${r.fellowship} ${r.funding || ""}`
         .toLowerCase()
         .includes(q.toLowerCase()),
   );
@@ -60,7 +65,10 @@ export default function Dashboard() {
         alert(errMsg(e));
       }
     };
-  const save = guard(async (d) => (d.id ? update(d.id, d) : add(d)));
+  const save = async (d) => {
+    if (d.id) await update(d.id, d);
+    else await add(d);
+  }; // error ditangani di modal
   const changeStatus = guard((p, status) => update(p.id, { ...p, status }));
   const del = guard(async (id) => {
     if (confirm("Hapus data anggota ini?")) await remove(id);
@@ -72,11 +80,11 @@ export default function Dashboard() {
     <div className="space-y-6 max-w-7xl mx-auto">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h2 className="text-2xl font-bold text-slate-800 capitalize">
-            {filter === "Semua" ? "Dashboard Pelatihan" : filter}
+          <h2 className="text-xl sm:text-2xl font-bold text-slate-800">
+            {filter === "Semua" ? "Dashboard Pelatihan" : STATUS_LABEL[filter]}
           </h2>
           <p className="text-sm text-slate-500">
-            {shown.length} anggota ditemukan
+            {shown.length} peserta ditemukan
           </p>
         </div>
         <div className="flex gap-2 w-full sm:w-auto">
