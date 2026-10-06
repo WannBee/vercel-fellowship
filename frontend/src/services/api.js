@@ -19,9 +19,14 @@ API.interceptors.request.use((c) => {
 API.interceptors.response.use(
   (r) => r,
   (e) => {
-    if (e.response?.status === 401 && !location.pathname.startsWith("/login")) {
-      localStorage.clear();
-      location.href = "/login";
+    const publicPaths = ["/", "/login", "/register"];
+    if (
+      e.response?.status === 401 &&
+      !publicPaths.includes(location.pathname)
+    ) {
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
+      location.href = "/"; // sesi kedaluwarsa → landing page
     }
     return Promise.reject(e);
   },

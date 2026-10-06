@@ -14,7 +14,7 @@ import Roles from "./pages/Roles";
 function Layout() {
   const { user } = useAuth();
   const [open, setOpen] = useState(false);
-  if (!user) return <Navigate to="/login" replace />;
+  if (!user) return <Navigate to="/" replace />;
   return (
     <ParticipantsProvider>
       <div className="flex h-dvh">

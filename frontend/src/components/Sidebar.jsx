@@ -54,10 +54,7 @@ export default function Sidebar({ open, onClose }) {
         : `/dashboard?status=${encodeURIComponent(key)}`,
     );
   const out = () => {
-    if (confirm("Apakah Anda yakin ingin keluar?")) {
-      nav("/", { replace: true }); // arahkan ke landing page dulu
-      logout();
-    }
+    if (confirm("Apakah Anda yakin ingin keluar?")) logout();
   };
 
   const accountItem = (to, Icon, label) => (
