@@ -5,20 +5,20 @@ import {
   LayoutDashboard,
   Search,
   Users,
-  ChevronLeft,
-  ChevronRight,
-  Building2,
-  MapPin,
-  Award,
-  Calendar,
-  Mail,
-  Phone,
-  Wallet,
+  //   ChevronLeft,
+  //   ChevronRight,
+  //   Building2,
+  //   MapPin,
+  //   Award,
+  //   Calendar,
+  //   Mail,
+  //   Phone,
+  //   Wallet,
 } from "lucide-react";
 import API from "../services/api";
 import { useAuth } from "../context/AuthContext";
 import { KSM, STATUS, ALL_LABEL, STATUS_LABEL } from "../constants/options";
-import { formatPeriod } from "../utils/FormatDate";
+// import { formatPeriod } from "../utils/FormatDate";
 
 const badge = {
   "akan pendidikan": "bg-blue-100 text-blue-700 border-blue-200",
@@ -176,7 +176,7 @@ export default function Landing() {
           </select>
         </div>
 
-        {error ? (
+        {/* {error ? (
           <p className="text-center text-rose-600 py-12">
             Gagal memuat data. Coba muat ulang halaman.
           </p>
@@ -187,120 +187,120 @@ export default function Landing() {
             Tidak ada data ditemukan.
           </div>
         ) : (
-          <>
-            <p className="text-sm text-slate-500">
-              {data.total} peserta ditemukan
-            </p>
-            <div className="md:hidden space-y-3">
-              {data.rows.map((p) => (
-                <div
-                  key={p.id}
-                  className="bg-white rounded-2xl border border-slate-200 shadow-sm p-4"
-                >
-                  <div className="flex items-start justify-between gap-2">
-                    <div className="font-semibold text-slate-900 break-words min-w-0">
-                      {p.name}
-                    </div>
-                    <Badge s={p.status} />
-                  </div>
-                  <div className="text-sm font-medium text-indigo-600 mt-0.5">
-                    {p.ksm}
-                  </div>
-                  <Meta icon={Award}>{p.fellowship}</Meta>
-                  <Meta icon={Mail}>{p.email}</Meta>
-                  <Meta icon={Phone}>{p.phone}</Meta>
-                  <Meta icon={Building2} cls="text-slate-700">
-                    {p.hospital}
-                  </Meta>
-                  <Meta icon={MapPin}>{p.province}</Meta>
-                  <Meta icon={Calendar} cls="text-slate-600 font-medium">
-                    {formatPeriod(p.period_start, p.period_end)}
-                  </Meta>
-                  <Meta icon={Wallet}>{p.funding || "-"}</Meta>
-                </div>
-              ))}
-            </div>
-            <div className="hidden md:block bg-white rounded-2xl border border-slate-200 shadow-sm overflow-x-auto">
-              <table className="w-full text-left border-collapse">
-                <thead>
-                  <tr className="bg-slate-50/70 border-b border-slate-200 text-slate-600 text-xs font-semibold uppercase tracking-wider">
-                    {[
-                      "Nama & Kontak",
-                      "KSM / Fellowship",
-                      "Asal RS & Provinsi",
-                      "Periode & Biaya",
-                      "Status",
-                    ].map((h) => (
-                      <th key={h} className="py-4 px-6">
-                        {h}
-                      </th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100 text-sm">
-                  {data.rows.map((p) => (
-                    <tr
-                      key={p.id}
-                      className="hover:bg-slate-50/50 transition-colors"
-                    >
-                      <td className="py-4 px-6">
-                        <div className="font-semibold text-slate-900">
-                          {p.name}
-                        </div>
-                        <Meta icon={Mail}>{p.email}</Meta>
-                        <Meta icon={Phone}>{p.phone}</Meta>
-                      </td>
-                      <td className="py-4 px-6">
-                        <div className="font-medium text-indigo-600">
-                          {p.ksm}
-                        </div>
-                        <Meta icon={Award}>{p.fellowship}</Meta>
-                      </td>
-                      <td className="py-4 px-6">
-                        <Meta icon={Building2} cls="text-slate-700">
-                          {p.hospital}
-                        </Meta>
-                        <Meta icon={MapPin}>{p.province}</Meta>
-                      </td>
-                      <td className="py-4 px-6">
-                        <Meta icon={Calendar} cls="text-slate-600 font-medium">
-                          {formatPeriod(p.period_start, p.period_end)}
-                        </Meta>
-                        <Meta icon={Wallet}>{p.funding || "-"}</Meta>
-                      </td>
-                      <td className="py-4 px-6">
-                        <Badge s={p.status} />
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-            {data.pages > 1 && (
-              <div className="flex items-center justify-between text-sm text-slate-500">
-                <span>
-                  Halaman {data.page} dari {data.pages}
-                </span>
-                <div className="flex gap-2">
-                  <button
-                    disabled={page <= 1}
-                    onClick={() => setPage(page - 1)}
-                    className="p-2 rounded-lg border border-slate-200 bg-white disabled:opacity-40"
-                  >
-                    <ChevronLeft className="w-4 h-4" />
-                  </button>
-                  <button
-                    disabled={page >= data.pages}
-                    onClick={() => setPage(page + 1)}
-                    className="p-2 rounded-lg border border-slate-200 bg-white disabled:opacity-40"
-                  >
-                    <ChevronRight className="w-4 h-4" />
-                  </button>
-                </div>
-              </div>
-            )}
-          </>
-        )}
+        //   <>
+        //     <p className="text-sm text-slate-500">
+        //       {data.total} peserta ditemukan
+        //     </p>
+        //     <div className="md:hidden space-y-3">
+        //       {data.rows.map((p) => (
+        //         <div
+        //           key={p.id}
+        //           className="bg-white rounded-2xl border border-slate-200 shadow-sm p-4"
+        //         >
+        //           <div className="flex items-start justify-between gap-2">
+        //             <div className="font-semibold text-slate-900 break-words min-w-0">
+        //               {p.name}
+        //             </div>
+        //             <Badge s={p.status} />
+        //           </div>
+        //           <div className="text-sm font-medium text-indigo-600 mt-0.5">
+        //             {p.ksm}
+        //           </div>
+        //           <Meta icon={Award}>{p.fellowship}</Meta>
+        //           <Meta icon={Mail}>{p.email}</Meta>
+        //           <Meta icon={Phone}>{p.phone}</Meta>
+        //           <Meta icon={Building2} cls="text-slate-700">
+        //             {p.hospital}
+        //           </Meta>
+        //           <Meta icon={MapPin}>{p.province}</Meta>
+        //           <Meta icon={Calendar} cls="text-slate-600 font-medium">
+        //             {formatPeriod(p.period_start, p.period_end)}
+        //           </Meta>
+        //           <Meta icon={Wallet}>{p.funding || "-"}</Meta>
+        //         </div>
+        //       ))}
+        //     </div>
+        //     <div className="hidden md:block bg-white rounded-2xl border border-slate-200 shadow-sm overflow-x-auto">
+        //       <table className="w-full text-left border-collapse">
+        //         <thead>
+        //           <tr className="bg-slate-50/70 border-b border-slate-200 text-slate-600 text-xs font-semibold uppercase tracking-wider">
+        //             {[
+        //               "Nama & Kontak",
+        //               "KSM / Fellowship",
+        //               "Asal RS & Provinsi",
+        //               "Periode & Biaya",
+        //               "Status",
+        //             ].map((h) => (
+        //               <th key={h} className="py-4 px-6">
+        //                 {h}
+        //               </th>
+        //             ))}
+        //           </tr>
+        //         </thead>
+        //         <tbody className="divide-y divide-slate-100 text-sm">
+        //           {data.rows.map((p) => (
+        //             <tr
+        //               key={p.id}
+        //               className="hover:bg-slate-50/50 transition-colors"
+        //             >
+        //               <td className="py-4 px-6">
+        //                 <div className="font-semibold text-slate-900">
+        //                   {p.name}
+        //                 </div>
+        //                 <Meta icon={Mail}>{p.email}</Meta>
+        //                 <Meta icon={Phone}>{p.phone}</Meta>
+        //               </td>
+        //               <td className="py-4 px-6">
+        //                 <div className="font-medium text-indigo-600">
+        //                   {p.ksm}
+        //                 </div>
+        //                 <Meta icon={Award}>{p.fellowship}</Meta>
+        //               </td>
+        //               <td className="py-4 px-6">
+        //                 <Meta icon={Building2} cls="text-slate-700">
+        //                   {p.hospital}
+        //                 </Meta>
+        //                 <Meta icon={MapPin}>{p.province}</Meta>
+        //               </td>
+        //               <td className="py-4 px-6">
+        //                 <Meta icon={Calendar} cls="text-slate-600 font-medium">
+        //                   {formatPeriod(p.period_start, p.period_end)}
+        //                 </Meta>
+        //                 <Meta icon={Wallet}>{p.funding || "-"}</Meta>
+        //               </td>
+        //               <td className="py-4 px-6">
+        //                 <Badge s={p.status} />
+        //               </td>
+        //             </tr>
+        //           ))}
+        //         </tbody>
+        //       </table>
+        //     </div>
+        //     {data.pages > 1 && (
+        //       <div className="flex items-center justify-between text-sm text-slate-500">
+        //         <span>
+        //           Halaman {data.page} dari {data.pages}
+        //         </span>
+        //         <div className="flex gap-2">
+        //           <button
+        //             disabled={page <= 1}
+        //             onClick={() => setPage(page - 1)}
+        //             className="p-2 rounded-lg border border-slate-200 bg-white disabled:opacity-40"
+        //           >
+        //             <ChevronLeft className="w-4 h-4" />
+        //           </button>
+        //           <button
+        //             disabled={page >= data.pages}
+        //             onClick={() => setPage(page + 1)}
+        //             className="p-2 rounded-lg border border-slate-200 bg-white disabled:opacity-40"
+        //           >
+        //             <ChevronRight className="w-4 h-4" />
+        //           </button>
+        //         </div>
+        //       </div>
+        //     )}
+        //   </>
+        )} */}
       </main>
       <footer className="text-center text-xs text-slate-400 py-8">
         © {new Date().getFullYear()} FellowshipApp
