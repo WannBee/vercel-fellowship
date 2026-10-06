@@ -55,8 +55,8 @@ export default function Sidebar({ open, onClose }) {
     );
   const out = () => {
     if (confirm("Apakah Anda yakin ingin keluar?")) {
+      nav("/", { replace: true }); // arahkan ke landing page dulu
       logout();
-      nav("/login", { replace: true });
     }
   };
 
