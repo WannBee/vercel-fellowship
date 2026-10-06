@@ -5,6 +5,8 @@ const raw = process.env.DATABASE_URL || "";
 const cfg = {
   ssl: raw.includes("localhost") ? false : { rejectUnauthorized: false },
   max: 3,
+  connectionTimeoutMillis: 8000, // gagal setelah 8 detik, tidak menggantung
+  idleTimeoutMillis: 10000,
 };
 
 if (process.env.DB_PASSWORD) {
