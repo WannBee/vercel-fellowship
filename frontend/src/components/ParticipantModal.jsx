@@ -1,6 +1,12 @@
 import { useState, useEffect } from "react";
 import { X } from "lucide-react";
-import { KSM, FELLOWSHIP, STATUS, FUNDING } from "../constants/options";
+import {
+  KSM,
+  FELLOWSHIP,
+  STATUS,
+  FUNDING,
+  STATUS_LABEL,
+} from "../constants/options";
 import { errMsg } from "../services/api";
 
 const EMPTY = {
@@ -44,12 +50,14 @@ const Input = ({ f, set, k, label, onChange, ...r }) => (
     />
   </div>
 );
-const Sel = ({ f, set, k, label, opts }) => (
+const Sel = ({ f, set, k, label, opts, labels }) => (
   <div>
     <Label>{label}</Label>
-    <select value={f[k]} onChange={set(k)} className={`${cls} capitalize`}>
+    <select value={f[k]} onChange={set(k)} className={cls}>
       {opts.map((o) => (
-        <option key={o}>{o}</option>
+        <option key={o} value={o}>
+          {labels ? labels[o] : o}
+        </option>
       ))}
     </select>
   </div>
@@ -176,6 +184,7 @@ export default function ParticipantModal({
               k="status"
               label="Status Pelatihan"
               opts={STATUS}
+              labels={STATUS_LABEL}
             />
             <Input
               f={f}

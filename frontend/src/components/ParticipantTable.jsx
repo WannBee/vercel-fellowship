@@ -9,7 +9,7 @@ import {
   Award,
   Wallet,
 } from "lucide-react";
-import { STATUS } from "../constants/options";
+import { STATUS, STATUS_LABEL } from "../constants/options";
 import { formatPeriod } from "../utils/FormatDate";
 
 const badge = {
@@ -28,11 +28,11 @@ const StatusSelect = ({ p, onChange }) => (
   <select
     value={p.status}
     onChange={(e) => onChange(p, e.target.value)}
-    className={`px-3 py-1.5 rounded-full text-xs font-medium border cursor-pointer capitalize focus:outline-none focus:ring-2 focus:ring-indigo-500 ${badge[p.status]}`}
+    className={`px-3 py-1.5 rounded-full text-xs font-medium border cursor-pointer focus:outline-none focus:ring-2 focus:ring-indigo-500 max-w-[16rem] ${badge[p.status]}`}
   >
     {STATUS.map((s) => (
       <option key={s} value={s} className="bg-white text-slate-700">
-        {s}
+        {STATUS_LABEL[s]}
       </option>
     ))}
   </select>

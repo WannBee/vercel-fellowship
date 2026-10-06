@@ -28,9 +28,9 @@ const badge = {
 };
 const Badge = ({ s }) => (
   <span
-    className={`px-3 py-1 rounded-full text-xs font-medium border capitalize whitespace-nowrap ${badge[s]}`}
+    className={`px-3 py-1 rounded-full text-xs font-medium border text-center ${badge[s]}`}
   >
-    {s}
+    {STATUS_LABEL[s] || s}
   </span>
 );
 const Meta = ({ icon: I, children, cls = "text-slate-500" }) => (
