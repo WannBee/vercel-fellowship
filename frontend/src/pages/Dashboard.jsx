@@ -81,11 +81,12 @@ export default function Dashboard() {
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h2 className="text-xl sm:text-2xl font-bold text-slate-800">
-            {filter === "Semua" ? "Dashboard Pelatihan" : STATUS_LABEL[filter]}
+            {filter === "Semua" ? "Dashboard Fellowship" : STATUS_LABEL[filter]}
           </h2>
           <p className="text-sm text-slate-500">
-            {shown.length} peserta ditemukan
+            {shown.length} Data Peserta Fellowship
           </p>
+          <p className="text-sm text-slate-500">RSUP Dr.Hasan Sadikin Badung</p>
         </div>
         <div className="flex gap-2 w-full sm:w-auto">
           <button
