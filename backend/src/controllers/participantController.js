@@ -8,7 +8,9 @@ const F = [
   "hospital",
   "province",
   "fellowship",
-  "period",
+  "funding",
+  "period_start",
+  "period_end",
   "status",
 ];
 const scope = (req) =>

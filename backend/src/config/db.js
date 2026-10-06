@@ -1,5 +1,6 @@
 import pg from "pg";
 import "dotenv/config";
+pg.types.setTypeParser(1082, (v) => v);
 
 const raw = process.env.DATABASE_URL || "";
 const cfg = {

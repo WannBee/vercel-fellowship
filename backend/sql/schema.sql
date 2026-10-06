@@ -9,7 +9,8 @@ CREATE TABLE IF NOT EXISTS participants (
   owner_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
   name TEXT NOT NULL, email TEXT NOT NULL, phone TEXT NOT NULL,
   ksm TEXT NOT NULL, hospital TEXT NOT NULL, province TEXT NOT NULL,
-  fellowship TEXT NOT NULL, period TEXT NOT NULL,
+  fellowship TEXT NOT NULL, funding TEXT,
+  period_start DATE, period_end DATE,
   status TEXT NOT NULL CHECK (status IN ('telah lulus','sedang pendidikan','cuti','akan pendidikan')),
   created_at TIMESTAMPTZ DEFAULT now());
 CREATE INDEX IF NOT EXISTS idx_part_owner ON participants(owner_id);
