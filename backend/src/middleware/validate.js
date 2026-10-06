@@ -1,5 +1,4 @@
 const STATUS = ["telah lulus", "sedang pendidikan", "cuti", "akan pendidikan"];
-const FUNDING = ["Biaya Kemkes", "Pribadi", "Kemkes dan LPDP"];
 const REQUIRED = [
   "name",
   "email",
@@ -26,8 +25,8 @@ export const validateParticipant = (req, res, next) => {
     return res.status(400).json({ message: "Format email tidak valid" });
   if (!STATUS.includes(b.status))
     return res.status(400).json({ message: "Status tidak valid" });
-  if (!FUNDING.includes(b.funding))
-    return res.status(400).json({ message: "Sumber biaya tidak valid" });
+  if (String(b.funding).length > 100)
+    return res.status(400).json({ message: "Sumber biaya terlalu panjang" });
   if (!isDate(b.period_start) || !isDate(b.period_end))
     return res
       .status(400)
