@@ -14,6 +14,9 @@ r.post("/auth/register", w(a.register));
 r.post("/auth/login", w(a.login));
 r.get("/auth/me", auth, w(a.me));
 
+//route chart
+r.get("/public/yearly", w(pub.yearly));
+
 // Publik (tanpa login, hanya membaca)
 r.get("/public/participants", w(pub.list));
 r.get("/public/stats", w(pub.stats));

@@ -60,3 +60,24 @@ export async function stats(_req, res) {
   const total = Object.values(status).reduce((a, b) => a + b, 0);
   res.json({ total, status, funding, ksm, fellowship });
 }
+
+const GROUPS = {
+  status: "status",
+  funding: "funding",
+  ksm: "ksm",
+  fellowship: "fellowship",
+};
+
+// GET /api/public/yearly?group=status  → [{ year: 2026, counts: { 'telah lulus': 3, cuti: 1 } }, ...]
+export async function yearly(req, res) {
+  const col = GROUPS[req.query.group] || "status"; // whitelist, bukan input mentah
+  const { rows } = await pool.query(
+    `SELECT EXTRACT(YEAR FROM period_start)::int AS year, ${col} AS k, COUNT(*)::int AS n
+     FROM participants WHERE period_start IS NOT NULL AND ${col} IS NOT NULL
+     GROUP BY 1, 2 ORDER BY 1`,
+  );
+  const byYear = {};
+  for (const r of rows)
+    (byYear[r.year] ??= { year: r.year, counts: {} }).counts[r.k] = r.n;
+  res.json(Object.values(byYear));
+}
