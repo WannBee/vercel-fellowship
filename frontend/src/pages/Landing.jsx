@@ -41,6 +41,49 @@ const TONES = {
   amber: "bg-amber-50 text-amber-600",
   rose: "bg-rose-50 text-rose-600",
 };
+
+// ---------- Konfigurasi & helper grafik ----------
+const PALETTE = ["#6366f1", "#10b981", "#f59e0b", "#ec4899", "#06b6d4"];
+const OTHER = { key: "__other", label: "Lainnya", color: "#94a3b8" };
+const STATUS_COLORS = {
+  "telah lulus": "#10b981",
+  "sedang pendidikan": "#8b5cf6",
+  "akan pendidikan": "#3b82f6",
+  cuti: "#f59e0b",
+};
+const STATUS_SERIES = Object.entries(STATUS_COLORS).map(([key, color]) => ({
+  key,
+  color,
+  label: STATUS_LABEL[key],
+}));
+
+// Ambil N kategori teratas (total semua tahun), sisanya digabung jadi "Lainnya"
+function topSeries(rows, n = 5) {
+  const total = {};
+  rows.forEach((r) =>
+    Object.entries(r.counts).forEach(([k, v]) => {
+      total[k] = (total[k] || 0) + v;
+    }),
+  );
+  const keys = Object.keys(total).sort((a, b) => total[b] - total[a]);
+  const top = keys.slice(0, n);
+  const series = top.map((k, i) => ({ key: k, label: k, color: PALETTE[i] }));
+  if (keys.length > n) series.push(OTHER);
+
+  const merged = rows.map((r) => {
+    const counts = {};
+    let other = 0;
+    Object.entries(r.counts).forEach(([k, v]) => {
+      if (top.includes(k)) counts[k] = v;
+      else other += v;
+    });
+    if (other) counts[OTHER.key] = other;
+    return { year: r.year, counts };
+  });
+  return { series, rows: merged };
+}
+
+// ---------- Komponen (di luar fungsi utama agar tidak dibuat ulang tiap render) ----------
 const Section = ({ title, desc, children, onDark = false }) => (
   <section className="space-y-5">
     <div>
@@ -63,6 +106,7 @@ const Section = ({ title, desc, children, onDark = false }) => (
     {children}
   </section>
 );
+
 const InfoCard = ({ label, value, icon: Icon, tone = "indigo" }) => (
   <div
     title={label}
@@ -81,6 +125,97 @@ const InfoCard = ({ label, value, icon: Icon, tone = "indigo" }) => (
     </p>
   </div>
 );
+
+const StackedBarChart = ({ title, rows, series }) => {
+  const totalOf = (r) => series.reduce((a, s) => a + (r.counts[s.key] || 0), 0);
+  const max = Math.max(1, ...rows.map(totalOf));
+  const ticks = [1, 0.75, 0.5, 0.25, 0].map((t) => Math.round(max * t));
+
+  return (
+    <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 sm:p-6">
+      <h3 className="font-bold text-slate-800">{title}</h3>
+      <div className="flex flex-wrap gap-x-5 gap-y-2 mt-3">
+        {series.map((s) => (
+          <span
+            key={s.key}
+            className="flex items-center gap-2 text-xs text-slate-600"
+          >
+            <span
+              className="w-3 h-3 rounded-sm shrink-0"
+              style={{ background: s.color }}
+            />
+            {s.label}
+          </span>
+        ))}
+      </div>
+
+      {rows.length === 0 ? (
+        <p className="text-center text-sm text-slate-400 py-16">
+          Belum ada data periode untuk ditampilkan.
+        </p>
+      ) : (
+        <div className="flex gap-3 mt-6">
+          <div className="flex flex-col justify-between h-64 text-xs text-slate-400 text-right pb-7">
+            {ticks.map((t, i) => (
+              <span key={i}>{t}</span>
+            ))}
+          </div>
+          <div className="flex-1 overflow-x-auto">
+            <div
+              className="relative h-64 min-w-full"
+              style={{ minWidth: rows.length * 72 }}
+            >
+              <div className="absolute inset-x-0 top-0 bottom-7 flex flex-col justify-between pointer-events-none">
+                {ticks.map((_, i) => (
+                  <div key={i} className="border-t border-slate-100" />
+                ))}
+              </div>
+              <div className="relative h-full flex items-end gap-3 px-2">
+                {rows.map((r) => {
+                  const total = totalOf(r);
+                  return (
+                    <div
+                      key={r.year}
+                      className="flex-1 min-w-[3.5rem] h-full flex flex-col justify-end items-center"
+                    >
+                      <div className="w-full flex-1 flex flex-col justify-end items-center">
+                        <span className="text-xs font-semibold text-slate-600 mb-1">
+                          {total}
+                        </span>
+                        <div
+                          className="w-full max-w-[3.5rem] flex flex-col-reverse rounded-t-lg overflow-hidden transition-all hover:opacity-90"
+                          style={{ height: `${(total / max) * 100}%` }}
+                        >
+                          {series.map((s) => {
+                            const n = r.counts[s.key] || 0;
+                            return n ? (
+                              <div
+                                key={s.key}
+                                title={`${r.year} · ${s.label}: ${n}`}
+                                style={{
+                                  height: `${(n / total) * 100}%`,
+                                  background: s.color,
+                                }}
+                              />
+                            ) : null;
+                          })}
+                        </div>
+                      </div>
+                      <span className="h-7 flex items-center text-xs font-medium text-slate-500">
+                        {r.year}
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
 function HeroVisual() {
   const [ok, setOk] = useState(true);
   if (ok)
@@ -104,17 +239,13 @@ function HeroVisual() {
   );
 }
 
+// ---------- Halaman ----------
 export default function Landing() {
   const { user } = useAuth();
   const [s, setS] = useState(null);
   const [error, setError] = useState(false);
   const [showAll, setShowAll] = useState(false);
-  const [yearly, setYearly] = useState(null);
-  useEffect(() => {
-    API.get("/api/public/yearly", { params: { group: "status" } })
-      .then((r) => setYearly(r.data))
-      .catch(() => setYearly([]));
-  }, []);
+  const [yearly, setYearly] = useState({});
 
   useEffect(() => {
     API.get("/api/public/stats")
@@ -122,10 +253,28 @@ export default function Landing() {
       .catch(() => setError(true));
   }, []);
 
+  useEffect(() => {
+    Promise.all(
+      ["status", "funding", "ksm", "fellowship"].map((g) =>
+        API.get("/api/public/yearly", { params: { group: g } })
+          .then((r) => [g, r.data])
+          .catch(() => [g, []]),
+      ),
+    ).then((entries) => setYearly(Object.fromEntries(entries)));
+  }, []);
+
   const st = s?.status || {};
   const fellowships = showAll ? FELLOWSHIP : FELLOWSHIP.slice(0, 12);
-  const fundingIcons = [Landmark, Coins, Wallet];
-  const fundingTones = ["indigo", "emerald", "amber"];
+  const fundingIcons = [Landmark, Coins, Wallet, Building2];
+  const fundingTones = ["indigo", "emerald", "amber", "rose"];
+
+  const ksmChart = topSeries(yearly.ksm || []);
+  const fellowshipChart = topSeries(yearly.fellowship || []);
+  const fundingSeries = FUNDING.map((f, i) => ({
+    key: f,
+    label: f,
+    color: PALETTE[i % PALETTE.length],
+  }));
 
   return (
     <div className="min-h-screen bg-slate-50">
@@ -229,7 +378,7 @@ export default function Landing() {
             </div>
             <StackedBarChart
               title="Peserta Fellowship per Tahun"
-              rows={yearly || []}
+              rows={yearly.status || []}
               series={STATUS_SERIES}
             />
           </Section>
@@ -242,11 +391,16 @@ export default function Landing() {
                 key={f}
                 label={f}
                 value={s ? (s.funding?.[f] ?? 0) : undefined}
-                icon={fundingIcons[i % 3]}
-                tone={fundingTones[i % 3]}
+                icon={fundingIcons[i % fundingIcons.length]}
+                tone={fundingTones[i % fundingTones.length]}
               />
             ))}
           </div>
+          <StackedBarChart
+            title="Jenis Pembiayaan per Tahun"
+            rows={yearly.funding || []}
+            series={fundingSeries}
+          />
         </Section>
 
         <Section title="KSM / Instalasi" desc={LOREM}>
@@ -261,6 +415,11 @@ export default function Landing() {
               />
             ))}
           </div>
+          <StackedBarChart
+            title="KSM / Instalasi per Tahun (5 Teratas)"
+            rows={ksmChart.rows}
+            series={ksmChart.series}
+          />
         </Section>
 
         <Section title="Jenis Fellowship" desc={LOREM}>
@@ -275,7 +434,31 @@ export default function Landing() {
               />
             ))}
           </div>
-          {/* tombol "Tampilkan semua" Anda tetap di sini, tidak berubah */}
+          {FELLOWSHIP.length > 12 && (
+            <div className="text-center">
+              <button
+                onClick={() => setShowAll(!showAll)}
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-medium border border-slate-200 bg-white hover:bg-slate-50"
+              >
+                {showAll ? (
+                  <>
+                    Tampilkan lebih sedikit
+                    <ChevronUp className="w-4 h-4" />
+                  </>
+                ) : (
+                  <>
+                    Tampilkan semua ({FELLOWSHIP.length})
+                    <ChevronDown className="w-4 h-4" />
+                  </>
+                )}
+              </button>
+            </div>
+          )}
+          <StackedBarChart
+            title="Jenis Fellowship per Tahun (5 Teratas)"
+            rows={fellowshipChart.rows}
+            series={fellowshipChart.series}
+          />
         </Section>
       </main>
 
@@ -292,104 +475,3 @@ export default function Landing() {
     </div>
   );
 }
-const StackedBarChart = ({ title, rows, series }) => {
-  const totalOf = (r) => series.reduce((a, s) => a + (r.counts[s.key] || 0), 0);
-  const max = Math.max(1, ...rows.map(totalOf));
-  const ticks = [1, 0.75, 0.5, 0.25, 0].map((t) => Math.round(max * t));
-
-  return (
-    <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 sm:p-6">
-      <h3 className="font-bold text-slate-800">{title}</h3>
-      <div className="flex flex-wrap gap-x-5 gap-y-2 mt-3">
-        {series.map((s) => (
-          <span
-            key={s.key}
-            className="flex items-center gap-2 text-xs text-slate-600"
-          >
-            <span
-              className="w-3 h-3 rounded-sm"
-              style={{ background: s.color }}
-            />
-            {s.label}
-          </span>
-        ))}
-      </div>
-
-      {rows.length === 0 ? (
-        <p className="text-center text-sm text-slate-400 py-16">
-          Belum ada data periode untuk ditampilkan.
-        </p>
-      ) : (
-        <div className="flex gap-3 mt-6">
-          <div className="flex flex-col justify-between h-64 text-xs text-slate-400 text-right pb-7">
-            {ticks.map((t, i) => (
-              <span key={i}>{t}</span>
-            ))}
-          </div>
-          <div className="flex-1 overflow-x-auto">
-            <div
-              className="relative h-64 min-w-full"
-              style={{ minWidth: rows.length * 72 }}
-            >
-              <div className="absolute inset-x-0 top-0 bottom-7 flex flex-col justify-between pointer-events-none">
-                {ticks.map((_, i) => (
-                  <div key={i} className="border-t border-slate-100" />
-                ))}
-              </div>
-              <div className="relative h-full flex items-end gap-3 px-2">
-                {rows.map((r) => {
-                  const total = totalOf(r);
-                  return (
-                    <div
-                      key={r.year}
-                      className="flex-1 min-w-[3.5rem] h-full flex flex-col justify-end items-center"
-                    >
-                      <div className="w-full flex-1 flex flex-col justify-end items-center pb-0">
-                        <span className="text-xs font-semibold text-slate-600 mb-1">
-                          {total}
-                        </span>
-                        <div
-                          className="w-full max-w-[3.5rem] flex flex-col-reverse rounded-t-lg overflow-hidden transition-all hover:opacity-90"
-                          style={{ height: `${(total / max) * 100}%` }}
-                        >
-                          {series.map((s) => {
-                            const n = r.counts[s.key] || 0;
-                            return n ? (
-                              <div
-                                key={s.key}
-                                title={`${r.year} · ${s.label}: ${n}`}
-                                style={{
-                                  height: `${(n / total) * 100}%`,
-                                  background: s.color,
-                                }}
-                              />
-                            ) : null;
-                          })}
-                        </div>
-                      </div>
-                      <span className="h-7 flex items-center text-xs font-medium text-slate-500">
-                        {r.year}
-                      </span>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-    </div>
-  );
-};
-
-const STATUS_COLORS = {
-  "telah lulus": "#10b981",
-  "sedang pendidikan": "#8b5cf6",
-  "akan pendidikan": "#3b82f6",
-  cuti: "#f59e0b",
-};
-const STATUS_SERIES = Object.entries(STATUS_COLORS).map(([key, color]) => ({
-  key,
-  color,
-  label: STATUS_LABEL[key],
-}));
