@@ -44,7 +44,6 @@ const TONES = {
 
 // ---------- Konfigurasi & helper grafik ----------
 const PALETTE = ["#6366f1", "#10b981", "#f59e0b", "#ec4899", "#06b6d4"];
-const OTHER = { key: "__other", label: "Lainnya", color: "#94a3b8" };
 const STATUS_COLORS = {
   "telah lulus": "#10b981",
   "sedang pendidikan": "#8b5cf6",
@@ -57,30 +56,20 @@ const STATUS_SERIES = Object.entries(STATUS_COLORS).map(([key, color]) => ({
   label: STATUS_LABEL[key],
 }));
 
-// Ambil N kategori teratas (total semua tahun), sisanya digabung jadi "Lainnya"
-function topSeries(rows, n = 5) {
-  const total = {};
-  rows.forEach((r) =>
-    Object.entries(r.counts).forEach(([k, v]) => {
-      total[k] = (total[k] || 0) + v;
-    }),
-  );
-  const keys = Object.keys(total).sort((a, b) => total[b] - total[a]);
-  const top = keys.slice(0, n);
-  const series = top.map((k, i) => ({ key: k, label: k, color: PALETTE[i] }));
-  if (keys.length > n) series.push(OTHER);
-
-  const merged = rows.map((r) => {
-    const counts = {};
-    let other = 0;
-    Object.entries(r.counts).forEach(([k, v]) => {
-      if (top.includes(k)) counts[k] = v;
-      else other += v;
-    });
-    if (other) counts[OTHER.key] = other;
-    return { year: r.year, counts };
-  });
-  return { series, rows: merged };
+// Susun daftar peringkat: SEMUA pilihan dari options.js (termasuk yang 0),
+// ditambah kategori di database yang tidak ada di options (misalnya teks lama).
+function buildItems(options, totals, yearlyRows, year) {
+  const counts =
+    year === "all"
+      ? totals || {}
+      : yearlyRows.find((r) => r.year === year)?.counts || {};
+  const labels = [
+    ...options,
+    ...Object.keys(counts).filter((k) => !options.includes(k)),
+  ];
+  return labels
+    .map((label) => ({ label, value: counts[label] || 0 }))
+    .sort((a, b) => b.value - a.value || a.label.localeCompare(b.label));
 }
 
 // ---------- Komponen (di luar fungsi utama agar tidak dibuat ulang tiap render) ----------
@@ -126,6 +115,7 @@ const InfoCard = ({ label, value, icon: Icon, tone = "indigo" }) => (
   </div>
 );
 
+// Grafik batang bertumpuk per tahun (untuk kategori sedikit: status, pembiayaan)
 const StackedBarChart = ({ title, rows, series }) => {
   const totalOf = (r) => series.reduce((a, s) => a + (r.counts[s.key] || 0), 0);
   const max = Math.max(1, ...rows.map(totalOf));
@@ -216,6 +206,80 @@ const StackedBarChart = ({ title, rows, series }) => {
   );
 };
 
+// Grafik peringkat horizontal (untuk kategori banyak: KSM, fellowship). Semua item tampil.
+const RankChart = ({ title, items, years, year, onYear, barClass }) => {
+  const [hideEmpty, setHideEmpty] = useState(false);
+  const shown = hideEmpty ? items.filter((i) => i.value > 0) : items;
+  const max = Math.max(1, ...items.map((i) => i.value));
+  const total = items.reduce((a, i) => a + i.value, 0);
+
+  return (
+    <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 sm:p-6">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <h3 className="font-bold text-slate-800">{title}</h3>
+          <p className="text-xs text-slate-500 mt-0.5">
+            {items.length} kategori · total {total} peserta
+          </p>
+        </div>
+        <label className="flex items-center gap-2 text-xs text-slate-600 cursor-pointer select-none">
+          <input
+            type="checkbox"
+            checked={hideEmpty}
+            onChange={(e) => setHideEmpty(e.target.checked)}
+            className="rounded border-slate-300"
+          />
+          Sembunyikan yang kosong
+        </label>
+      </div>
+
+      <div className="flex flex-wrap gap-2 mt-4">
+        {["all", ...years].map((y) => (
+          <button
+            key={y}
+            onClick={() => onYear(y)}
+            className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-colors ${
+              year === y
+                ? "bg-indigo-600 text-white border-indigo-600"
+                : "bg-white text-slate-600 border-slate-200 hover:bg-slate-50"
+            }`}
+          >
+            {y === "all" ? "Semua" : y}
+          </button>
+        ))}
+      </div>
+
+      <div className="mt-5 space-y-2">
+        {shown.length === 0 && (
+          <p className="text-center text-sm text-slate-400 py-10">
+            Belum ada data untuk ditampilkan.
+          </p>
+        )}
+        {shown.map((i) => (
+          <div
+            key={i.label}
+            className="flex items-center gap-3"
+            title={`${i.label}: ${i.value}`}
+          >
+            <span className="w-32 sm:w-64 shrink-0 text-xs sm:text-sm text-slate-700 leading-snug break-words">
+              {i.label}
+            </span>
+            <div className="flex-1 h-5 rounded-full bg-slate-100 overflow-hidden">
+              <div
+                className={`h-full rounded-full transition-all duration-500 ${barClass}`}
+                style={{ width: `${(i.value / max) * 100}%` }}
+              />
+            </div>
+            <span className="w-8 shrink-0 text-right text-sm font-semibold text-slate-800">
+              {i.value}
+            </span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
 function HeroVisual() {
   const [ok, setOk] = useState(true);
   if (ok)
@@ -246,6 +310,8 @@ export default function Landing() {
   const [error, setError] = useState(false);
   const [showAll, setShowAll] = useState(false);
   const [yearly, setYearly] = useState({});
+  const [ksmYear, setKsmYear] = useState("all");
+  const [fellowshipYear, setFellowshipYear] = useState("all");
 
   useEffect(() => {
     API.get("/api/public/stats")
@@ -267,14 +333,20 @@ export default function Landing() {
   const fellowships = showAll ? FELLOWSHIP : FELLOWSHIP.slice(0, 12);
   const fundingIcons = [Landmark, Coins, Wallet, Building2];
   const fundingTones = ["indigo", "emerald", "amber", "rose"];
-
-  const ksmChart = topSeries(yearly.ksm || []);
-  const fellowshipChart = topSeries(yearly.fellowship || []);
   const fundingSeries = FUNDING.map((f, i) => ({
     key: f,
     label: f,
     color: PALETTE[i % PALETTE.length],
   }));
+
+  const yearsOf = (rows = []) => rows.map((r) => r.year).sort((a, b) => b - a);
+  const ksmItems = buildItems(KSM, s?.ksm, yearly.ksm || [], ksmYear);
+  const fellowshipItems = buildItems(
+    FELLOWSHIP,
+    s?.fellowship,
+    yearly.fellowship || [],
+    fellowshipYear,
+  );
 
   return (
     <div className="min-h-screen bg-slate-50">
@@ -415,10 +487,13 @@ export default function Landing() {
               />
             ))}
           </div>
-          <StackedBarChart
-            title="KSM / Instalasi per Tahun (5 Teratas)"
-            rows={ksmChart.rows}
-            series={ksmChart.series}
+          <RankChart
+            title="Peserta per KSM / Instalasi"
+            items={ksmItems}
+            years={yearsOf(yearly.ksm)}
+            year={ksmYear}
+            onYear={setKsmYear}
+            barClass="bg-gradient-to-r from-blue-500 to-indigo-500"
           />
         </Section>
 
@@ -454,10 +529,13 @@ export default function Landing() {
               </button>
             </div>
           )}
-          <StackedBarChart
-            title="Jenis Fellowship per Tahun (5 Teratas)"
-            rows={fellowshipChart.rows}
-            series={fellowshipChart.series}
+          <RankChart
+            title="Peserta per Jenis Fellowship"
+            items={fellowshipItems}
+            years={yearsOf(yearly.fellowship)}
+            year={fellowshipYear}
+            onYear={setFellowshipYear}
+            barClass="bg-gradient-to-r from-purple-500 to-fuchsia-500"
           />
         </Section>
       </main>
