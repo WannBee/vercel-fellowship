@@ -71,8 +71,8 @@ export const FELLOWSHIP = [
 export const FUNDING = ["Biaya Kemkes", "Pribadi", "Kemkes", "LPDP"];
 export const ALL_LABEL = "Total Peserta Fellowship";
 export const STATUS_LABEL = {
-  "akan pendidikan": "Peserta Fellowship yang Akan Pendidikan",
-  "sedang pendidikan": "Peserta Fellowship yang Sedang Pendidikan",
+  "akan pendidikan": "Peserta Akan Pendidikan",
+  "sedang pendidikan": "Peserta Sedang Pendidikan",
   cuti: "Cuti",
-  "telah lulus": "Jumlah Lulusan FellowShip",
+  "telah lulus": "Telah Lulus",
 };
