@@ -460,7 +460,10 @@ export default function Landing() {
           </Section>
         </div>
 
-        <Section title="Jenis Pembiayaan" desc={LOREM}>
+        <Section
+          title="Jenis Pembiayaan"
+          desc="pembiayaan yang digunakan oleh peserta fellowship"
+        >
           <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
             {FUNDING.map((f, i) => (
               <InfoCard
@@ -479,7 +482,10 @@ export default function Landing() {
           />
         </Section>
 
-        <Section title="KSM / Instalasi" desc={LOREM}>
+        <Section
+          title="KSM / Instalasi"
+          desc="ksm/instalasi yang tersedia dalam pelatihan."
+        >
           <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
             {KSM.map((k) => (
               <InfoCard
@@ -501,7 +507,10 @@ export default function Landing() {
           />
         </Section>
 
-        <Section title="Jenis Fellowship" desc={LOREM}>
+        <Section
+          title="Jenis Fellowship"
+          desc="jenis jenis fellowship yang tersedia"
+        >
           <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
             {fellowships.map((f) => (
               <InfoCard
