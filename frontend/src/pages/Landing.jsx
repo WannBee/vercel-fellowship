@@ -546,7 +546,7 @@ export default function Landing() {
             <Users className="w-5 h-5 text-indigo-400" />
             FellowshipApp
           </div>
-          <p className="text-center">{LOREM.slice(0, 60)}...</p>
+          <p className="text-center">all right reserved</p>
           <p>© {new Date().getFullYear()} FellowshipApp</p>
         </div>
       </footer>
