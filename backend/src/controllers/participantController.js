@@ -2,8 +2,6 @@ import { pool } from "../config/db.js";
 
 const F = [
   "name",
-  "email",
-  "phone",
   "ksm",
   "hospital",
   "province",

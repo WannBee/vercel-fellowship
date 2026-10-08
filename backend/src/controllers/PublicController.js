@@ -1,7 +1,7 @@
 import { pool } from "../config/db.js";
 
 const COLS =
-  "id, name, email, phone, ksm, fellowship, hospital, province, funding, period_start, period_end, status";
+  "id, name, ksm, fellowship, hospital, province, funding, period_start, period_end, status";
 const PER_PAGE = 10;
 
 export async function list(req, res) {
@@ -19,7 +19,7 @@ export async function list(req, res) {
   if (q) {
     params.push(`%${q}%`);
     const n = params.length;
-    where += ` AND (name ILIKE $${n} OR email ILIKE $${n} OR hospital ILIKE $${n} OR province ILIKE $${n} OR fellowship ILIKE $${n} OR funding ILIKE $${n})`;
+    where += ` AND (name ILIKE $${n} OR hospital ILIKE $${n} OR province ILIKE $${n} OR fellowship ILIKE $${n} OR funding ILIKE $${n})`;
   }
   const page = Math.max(1, parseInt(req.query.page) || 1);
   const total = (

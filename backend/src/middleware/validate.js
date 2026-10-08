@@ -1,8 +1,6 @@
 const STATUS = ["telah lulus", "sedang pendidikan", "cuti", "akan pendidikan"];
 const REQUIRED = [
   "name",
-  "email",
-  "phone",
   "ksm",
   "hospital",
   "province",
@@ -21,8 +19,6 @@ export const validateParticipant = (req, res, next) => {
     return res
       .status(400)
       .json({ message: `Field wajib diisi: ${missing.join(", ")}` });
-  if (!/^\S+@\S+\.\S+$/.test(b.email))
-    return res.status(400).json({ message: "Format email tidak valid" });
   if (!STATUS.includes(b.status))
     return res.status(400).json({ message: "Status tidak valid" });
   if (String(b.funding).length > 100)
