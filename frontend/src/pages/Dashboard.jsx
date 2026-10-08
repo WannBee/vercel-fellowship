@@ -48,7 +48,7 @@ export default function Dashboard() {
     (r) =>
       (filter === "Semua" || r.status === filter) &&
       (!ksm || r.ksm === ksm) &&
-      `${r.name} ${r.email} ${r.hospital} ${r.province} ${r.fellowship} ${r.funding || ""}`
+      `${r.name} ${r.hospital} ${r.province} ${r.fellowship} ${r.funding || ""}`
         .toLowerCase()
         .includes(q.toLowerCase()),
   );

@@ -1,7 +1,5 @@
 const COLS = [
   ["name", "Nama"],
-  ["email", "Email"],
-  ["phone", "Telepon"],
   ["ksm", "KSM/Instalasi"],
   ["fellowship", "Fellowship"],
   ["hospital", "Asal RS"],

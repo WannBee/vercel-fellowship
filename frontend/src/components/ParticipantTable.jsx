@@ -1,8 +1,6 @@
 import {
   Edit2,
   Trash2,
-  Mail,
-  Phone,
   Building2,
   MapPin,
   Calendar,
@@ -90,8 +88,6 @@ export default function ParticipantTable({
               <Actions p={p} onEdit={onEdit} onDelete={onDelete} />
             </div>
             <Meta icon={Award}>{p.fellowship}</Meta>
-            <Meta icon={Mail}>{p.email}</Meta>
-            <Meta icon={Phone}>{p.phone}</Meta>
             <Meta icon={Building2} cls="text-slate-700">
               {p.hospital}
             </Meta>
@@ -131,8 +127,6 @@ export default function ParticipantTable({
               <tr key={p.id} className="hover:bg-slate-50/50 transition-colors">
                 <td className="py-4 px-6">
                   <div className="font-semibold text-slate-900">{p.name}</div>
-                  <Meta icon={Mail}>{p.email}</Meta>
-                  <Meta icon={Phone}>{p.phone}</Meta>
                 </td>
                 <td className="py-4 px-6">
                   <div className="font-medium text-indigo-600">{p.ksm}</div>

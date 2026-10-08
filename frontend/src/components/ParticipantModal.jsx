@@ -11,8 +11,6 @@ import { errMsg } from "../services/api";
 
 const EMPTY = {
   name: "",
-  email: "",
-  phone: "",
   ksm: KSM[0],
   hospital: "",
   province: "",
@@ -134,21 +132,6 @@ export default function ParticipantModal({
             placeholder="Dr. Budi Santoso, Sp.A"
           />
           <div className="grid md:grid-cols-2 gap-4">
-            <Input
-              f={f}
-              set={set}
-              k="email"
-              type="email"
-              label="Email"
-              placeholder="budi@example.com"
-            />
-            <Input
-              f={f}
-              set={set}
-              k="phone"
-              label="Nomor Telepon"
-              placeholder="08123456789"
-            />
             <Sel f={f} set={set} k="ksm" label="KSM / Instalasi" opts={KSM} />
             <Sel
               f={f}
