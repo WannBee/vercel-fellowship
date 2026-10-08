@@ -414,11 +414,11 @@ export default function Landing() {
           </p>
         )}
 
-        <div className="-mt-25">
+        <div className="mt-20">
           <Section
             onDark
             title="Peserta Fellowship"
-            desc="Data berikut merupakan total keseluruhan peserta, baik yang sudah mengikuti/menyelesaikan fellowship, peserta yang sedang melakukan pendidikan, peserta yang akan melakukan pendidikan dan pesrta yang Cuti kegiatan."
+            desc="Data berikut merupakan total keseluruhan peserta, baik yang sudah mengikuti/menyelesaikan fellowship, peserta yang sedang melakukan pendidikan, peserta yang akan melakukan pendidikan dan pesrta yang Cuti kegiatan"
           >
             <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
               <InfoCard
