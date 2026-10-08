@@ -414,7 +414,7 @@ export default function Landing() {
           </p>
         )}
 
-        <div className="-mt-20 py-7">
+        <div className="-mt-10">
           <Section
             onDark
             title="Peserta Fellowship"
