@@ -486,8 +486,8 @@ export default function Landing() {
         </Section>
 
         <Section
-          title="KSM / Instalasi"
-          desc="ksm/instalasi yang tersedia dalam pelatihan."
+          title="Divisi/Departemen"
+          desc="Divisi/Departemen yang tersedia dalam pelatihan."
         >
           <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
             {KSM.map((k) => (
