@@ -24,6 +24,7 @@ export const KSM = [
 ];
 export const FELLOWSHIP = [
   "Neonatologi",
+  "Electrophysiology and Pacing (Aritmia)",
   "Emergensi & Terapi Intensif Anak",
   "Orthopaedi Sports Injury",
   "Orthopaedi Shoulder and Elbow",
