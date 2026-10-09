@@ -39,22 +39,71 @@ const KEYS = [
   "Province",
   "province",
   "WADMPR",
+  "Propinsi",
 ];
-const nameOf = (p = {}) => {
-  const k = KEYS.find((k) => p[k]);
-  return k ? p[k] : "";
+const nameOf = (p) => {
+  const props = p || {};
+  const k = KEYS.find((k) => props[k]);
+  return k ? props[k] : "";
 };
+
+// ---- Perbaiki arah poligon agar sesuai aturan d3-geo (ring luar searah jarum jam) ----
+const area = (ring) => {
+  let a = 0;
+  for (let i = 0, n = ring.length - 1; i < n; i++)
+    a += ring[i][0] * ring[i + 1][1] - ring[i + 1][0] * ring[i][1];
+  return a / 2;
+};
+const fixRing = (ring, exterior) => {
+  const a = area(ring);
+  return (exterior ? a > 0 : a < 0) ? [...ring].reverse() : ring;
+};
+const fixPolygon = (poly) => poly.map((r, i) => fixRing(r, i === 0));
+function rewind(geo) {
+  const features = (geo.features || [])
+    .filter((f) => f && f.geometry)
+    .map((f) => {
+      const g = f.geometry;
+      if (g.type === "Polygon")
+        return {
+          ...f,
+          geometry: { ...g, coordinates: fixPolygon(g.coordinates) },
+        };
+      if (g.type === "MultiPolygon")
+        return {
+          ...f,
+          geometry: { ...g, coordinates: g.coordinates.map(fixPolygon) },
+        };
+      return f;
+    });
+  return { ...geo, features };
+}
 
 export default function IndonesiaMap({ data }) {
   const [geo, setGeo] = useState(null);
-  const [failed, setFailed] = useState(false);
+  const [failed, setFailed] = useState("");
   const [hover, setHover] = useState(null);
 
   useEffect(() => {
     fetch("/indonesia-38.geojson")
-      .then((r) => r.json())
-      .then(setGeo)
-      .catch(() => setFailed(true));
+      .then((r) => {
+        if (!r.ok) throw new Error("File tidak ditemukan");
+        return r.json();
+      })
+      .then((j) => {
+        if (j.type !== "FeatureCollection")
+          throw new Error(
+            `Format file "${j.type}" tidak didukung, harus FeatureCollection (GeoJSON)`,
+          );
+        setGeo(rewind(j));
+      })
+      .catch((e) =>
+        setFailed(
+          e instanceof SyntaxError
+            ? "File bukan JSON yang valid (kemungkinan file tidak ada, lalu server mengembalikan halaman web)."
+            : e.message,
+        ),
+      );
   }, []);
 
   const { counts, unmapped } = useMemo(() => {
@@ -68,19 +117,21 @@ export default function IndonesiaMap({ data }) {
     return { counts: c, unmapped: other };
   }, [data]);
 
-  const paths = useMemo(() => {
-    if (!geo || geo.type !== "FeatureCollection") return [];
+  const { paths, badNames } = useMemo(() => {
+    if (!geo || !geo.features.length) return { paths: [], badNames: [] };
     const gp = geoPath(geoMercator().fitSize([W, H], geo));
     const bad = [];
-    const out = geo.features.map((f, i) => {
+    const out = [];
+    geo.features.forEach((f, i) => {
       const raw = nameOf(f.properties);
       const name = canon(raw);
-      if (!name) bad.push(raw);
-      return { key: i, d: gp(f), name: name || raw };
+      if (!name) bad.push(raw || "(tanpa nama)");
+      const d = gp(f);
+      if (d) out.push({ key: i, d, name: name || raw });
     });
     if (bad.length)
       console.warn("Nama provinsi di peta tidak cocok dengan daftar:", bad);
-    return out;
+    return { paths: out, badNames: bad };
   }, [geo]);
 
   const max = Math.max(1, ...Object.values(counts));
@@ -90,6 +141,9 @@ export default function IndonesiaMap({ data }) {
   const covered = Object.keys(counts).length;
   const fill = (n) =>
     n ? `rgba(79,70,229,${0.25 + 0.75 * (n / max)})` : "#e2e8f0";
+  const sampleKeys = geo?.features?.[0]?.properties
+    ? Object.keys(geo.features[0].properties).join(", ")
+    : "-";
 
   return (
     <div className="grid lg:grid-cols-3 gap-5">
@@ -107,14 +161,19 @@ export default function IndonesiaMap({ data }) {
             banyak
           </div>
         </div>
-        {failed || (geo && geo.type !== "FeatureCollection") ? (
-          <p className="text-center text-sm text-slate-400 py-16">
-            Peta belum bisa dimuat. Pastikan file indonesia-38.geojson ada di
-            folder public dan berformat GeoJSON.
+
+        {failed ? (
+          <p className="text-center text-sm text-rose-500 py-16">
+            Peta belum bisa dimuat: {failed}
           </p>
         ) : !geo ? (
           <p className="text-center text-sm text-slate-400 py-16">
             Memuat peta...
+          </p>
+        ) : paths.length === 0 ? (
+          <p className="text-center text-sm text-amber-600 py-16">
+            File terbaca ({geo.features.length} fitur), tetapi tidak ada bentuk
+            yang bisa digambar. Pastikan geometrinya Polygon/MultiPolygon.
           </p>
         ) : (
           <svg
@@ -139,6 +198,15 @@ export default function IndonesiaMap({ data }) {
               );
             })}
           </svg>
+        )}
+
+        {badNames.length > 0 && (
+          <p className="text-xs text-amber-600 mt-3 break-words">
+            {badNames.length} nama di file peta tidak cocok dengan daftar
+            provinsi ({badNames.slice(0, 8).join(", ")}
+            {badNames.length > 8 ? ", ..." : ""}). Nama properti yang terbaca
+            dari file: {sampleKeys}.
+          </p>
         )}
       </div>
 
