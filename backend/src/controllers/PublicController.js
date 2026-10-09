@@ -51,14 +51,15 @@ export async function stats(_req, res) {
     );
     return Object.fromEntries(rows.map((r) => [r.k, r.n]));
   };
-  const [status, funding, ksm, fellowship] = await Promise.all([
+  const [status, funding, ksm, fellowship, province] = await Promise.all([
     count("status"),
     count("funding"),
     count("ksm"),
     count("fellowship"),
+    count("province"),
   ]);
   const total = Object.values(status).reduce((a, b) => a + b, 0);
-  res.json({ total, status, funding, ksm, fellowship });
+  res.json({ total, status, funding, ksm, fellowship, province });
 }
 
 const GROUPS = {
