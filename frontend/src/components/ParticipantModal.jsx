@@ -8,13 +8,6 @@ import {
   PROVINCES,
 } from "../constants/options";
 import { X } from "lucide-react";
-import {
-  KSM,
-  FELLOWSHIP,
-  STATUS,
-  FUNDING,
-  STATUS_LABEL,
-} from "../constants/options";
 import { errMsg } from "../services/api";
 
 const EMPTY = {
