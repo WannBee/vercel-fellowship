@@ -136,10 +136,7 @@ export default function IndonesiaMap({ data }) {
 
   const max = Math.max(1, ...Object.values(counts));
   const fill = (n) =>
-    n ? `rgba(79,70,229,${0.25 + 0.75 * (n / max)})` : "#e2e8f0";
-  const sampleKeys = geo?.features?.[0]?.properties
-    ? Object.keys(geo.features[0].properties).join(", ")
-    : "-";
+    n ? `rgba(7,125,137,${0.25 + 0.75 * (n / max)})` : "#e2e8f0";
 
   return (
     <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 sm:p-6">

@@ -44,11 +44,11 @@ const TONES = {
 };
 
 // ---------- Konfigurasi & helper grafik ----------
-const PALETTE = ["#6366f1", "#10b981", "#f59e0b", "#ec4899", "#06b6d4"];
+const PALETTE = ["#0a97a4", "#8cc63f", "#f59e0b", "#0e424a", "#e76f51"];
 const STATUS_COLORS = {
-  "telah lulus": "#10b981",
-  "sedang pendidikan": "#8b5cf6",
-  "akan pendidikan": "#3b82f6",
+  "telah lulus": "#76b02f",
+  "sedang pendidikan": "#0a97a4",
+  "akan pendidikan": "#667c7e",
   cuti: "#f59e0b",
 };
 const STATUS_SERIES = Object.entries(STATUS_COLORS).map(([key, color]) => ({
@@ -376,7 +376,7 @@ export default function Landing() {
         </div>
       </header>
 
-      <section className="bg-gradient-to-br from-indigo-700 via-indigo-600 to-purple-700 text-white">
+      <section className="bg-indigo-800 text-white">
         <div className="max-w-7xl mx-auto px-4 pt-12 pb-32 sm:pt-16 sm:pb-36 grid lg:grid-cols-2 gap-10 items-center">
           <div>
             <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/15 text-xs font-medium">
@@ -506,7 +506,7 @@ export default function Landing() {
             years={yearsOf(yearly.ksm)}
             year={ksmYear}
             onYear={setKsmYear}
-            barClass="bg-gradient-to-r from-blue-500 to-indigo-500"
+            barClass="bg-indigo-500"
           />
         </Section>
 
@@ -551,7 +551,7 @@ export default function Landing() {
             years={yearsOf(yearly.fellowship)}
             year={fellowshipYear}
             onYear={setFellowshipYear}
-            barClass="bg-gradient-to-r from-purple-500 to-fuchsia-500"
+            barClass="bg-emerald-500"
           />
         </Section>
       </main>
