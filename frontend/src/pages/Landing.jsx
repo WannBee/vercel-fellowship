@@ -501,7 +501,7 @@ export default function Landing() {
             ))}
           </div>
           <RankChart
-            title="Peserta per KSM / Instalasi"
+            title="Peserta per Divisi/Departemen"
             items={ksmItems}
             years={yearsOf(yearly.ksm)}
             year={ksmYear}
