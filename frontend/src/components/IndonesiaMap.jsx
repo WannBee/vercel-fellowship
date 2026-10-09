@@ -135,10 +135,6 @@ export default function IndonesiaMap({ data }) {
   }, [geo]);
 
   const max = Math.max(1, ...Object.values(counts));
-  const top = Object.entries(counts)
-    .sort((a, b) => b[1] - a[1])
-    .slice(0, 5);
-  const covered = Object.keys(counts).length;
   const fill = (n) =>
     n ? `rgba(79,70,229,${0.25 + 0.75 * (n / max)})` : "#e2e8f0";
   const sampleKeys = geo?.features?.[0]?.properties
@@ -146,103 +142,73 @@ export default function IndonesiaMap({ data }) {
     : "-";
 
   return (
-    <div className="grid lg:grid-cols-3 gap-5">
-      <div className="lg:col-span-2 bg-white rounded-2xl border border-slate-200 shadow-sm p-4 sm:p-6">
-        <div className="flex items-center justify-between gap-3 mb-3 min-h-[2.5rem]">
-          <p className="flex items-center gap-2 text-sm font-medium text-slate-700">
-            <MapPin className="w-4 h-4 text-indigo-600 shrink-0" />
-            {hover
-              ? `${hover.name}: ${hover.count} peserta`
-              : "Arahkan kursor atau ketuk sebuah provinsi"}
-          </p>
-          <div className="hidden sm:flex items-center gap-2 text-xs text-slate-500 shrink-0">
-            sedikit
-            <span className="w-24 h-2 rounded-full bg-gradient-to-r from-indigo-200 to-indigo-600" />
-            banyak
-          </div>
-        </div>
-
-        {failed ? (
-          <p className="text-center text-sm text-rose-500 py-16">
-            Peta belum bisa dimuat: {failed}
-          </p>
-        ) : !geo ? (
-          <p className="text-center text-sm text-slate-400 py-16">
-            Memuat peta...
-          </p>
-        ) : paths.length === 0 ? (
-          <p className="text-center text-sm text-amber-600 py-16">
-            File terbaca ({geo.features.length} fitur), tetapi tidak ada bentuk
-            yang bisa digambar. Pastikan geometrinya Polygon/MultiPolygon.
-          </p>
-        ) : (
-          <svg
-            viewBox={`0 0 ${W} ${H}`}
-            className="w-full h-auto"
-            onMouseLeave={() => setHover(null)}
-          >
-            {paths.map((p) => {
-              const n = counts[p.name] || 0;
-              const active = hover?.name === p.name;
-              return (
-                <path
-                  key={p.key}
-                  d={p.d}
-                  fill={fill(n)}
-                  stroke={active ? "#1e293b" : "#ffffff"}
-                  strokeWidth={active ? 1.4 : 0.6}
-                  className="cursor-pointer transition-colors"
-                  onMouseEnter={() => setHover({ name: p.name, count: n })}
-                  onClick={() => setHover({ name: p.name, count: n })}
-                />
-              );
-            })}
-          </svg>
-        )}
-
-        {badNames.length > 0 && (
-          <p className="text-xs text-amber-600 mt-3 break-words">
-            {badNames.length} nama di file peta tidak cocok dengan daftar
-            provinsi ({badNames.slice(0, 8).join(", ")}
-            {badNames.length > 8 ? ", ..." : ""}). Nama properti yang terbaca
-            dari file: {sampleKeys}.
-          </p>
-        )}
-      </div>
-
-      <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 sm:p-6">
-        <h3 className="font-bold text-slate-800">Provinsi Terbanyak</h3>
-        <p className="text-xs text-slate-500 mt-0.5">
-          {covered} dari {PROVINCES.length} provinsi terwakili
+    <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 sm:p-6">
+      <div className="flex items-center justify-between gap-3 mb-3 min-h-[2.5rem]">
+        <p className="flex items-center gap-2 text-sm font-medium text-slate-700">
+          <MapPin className="w-4 h-4 text-indigo-600 shrink-0" />
+          {hover
+            ? `${hover.name}: ${hover.count} peserta`
+            : "Arahkan kursor atau ketuk sebuah provinsi"}
         </p>
-        <div className="mt-5 space-y-4">
-          {top.length === 0 && (
-            <p className="text-sm text-slate-400">Belum ada data provinsi.</p>
-          )}
-          {top.map(([name, n], i) => (
-            <div key={name}>
-              <div className="flex items-center justify-between text-sm">
-                <span className="text-slate-700">
-                  {i + 1}. {name}
-                </span>
-                <span className="font-semibold text-slate-800">{n}</span>
-              </div>
-              <div className="h-2 rounded-full bg-slate-100 mt-1.5 overflow-hidden">
-                <div
-                  className="h-full rounded-full bg-gradient-to-r from-indigo-500 to-purple-500"
-                  style={{ width: `${(n / max) * 100}%` }}
-                />
-              </div>
-            </div>
-          ))}
+        <div className="hidden sm:flex items-center gap-2 text-xs text-slate-500 shrink-0">
+          sedikit
+          <span className="w-24 h-2 rounded-full bg-gradient-to-r from-indigo-200 to-indigo-600" />
+          banyak
         </div>
-        {unmapped > 0 && (
-          <p className="text-xs text-amber-600 mt-5">
-            {unmapped} peserta belum terpetakan (nama provinsi tidak sesuai
-            daftar).
-          </p>
-        )}
       </div>
+
+      {failed ? (
+        <p className="text-center text-sm text-rose-500 py-16">
+          Peta belum bisa dimuat: {failed}
+        </p>
+      ) : !geo ? (
+        <p className="text-center text-sm text-slate-400 py-16">
+          Memuat peta...
+        </p>
+      ) : paths.length === 0 ? (
+        <p className="text-center text-sm text-amber-600 py-16">
+          File terbaca ({geo.features.length} fitur), tetapi tidak ada bentuk
+          yang bisa digambar. Pastikan geometrinya Polygon/MultiPolygon.
+        </p>
+      ) : (
+        <svg
+          viewBox={`0 0 ${W} ${H}`}
+          className="w-full h-auto"
+          onMouseLeave={() => setHover(null)}
+        >
+          {paths.map((p) => {
+            const n = counts[p.name] || 0;
+            const active = hover?.name === p.name;
+            return (
+              <path
+                key={p.key}
+                d={p.d}
+                fill={fill(n)}
+                stroke={active ? "#1e293b" : "#ffffff"}
+                strokeWidth={active ? 1.4 : 0.6}
+                className="cursor-pointer transition-colors"
+                onMouseEnter={() => setHover({ name: p.name, count: n })}
+                onClick={() => setHover({ name: p.name, count: n })}
+              />
+            );
+          })}
+        </svg>
+      )}
+
+      {unmapped > 0 && (
+        <p className="text-xs text-amber-600 mt-3">
+          {unmapped} peserta belum terpetakan (nama provinsi tidak sesuai
+          daftar).
+        </p>
+      )}
+      {badNames.length > 0 && (
+        <p className="text-xs text-amber-600 mt-2 break-words">
+          {badNames.length} nama di file peta tidak cocok dengan daftar provinsi
+          ({badNames.slice(0, 8).join(", ")}
+          {badNames.length > 8 ? ", ..." : ""}). Nama properti yang terbaca dari
+          file: {sampleKeys}.
+        </p>
+      )}
     </div>
   );
 }
