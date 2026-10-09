@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import IndonesiaMap from "../components/IndonesiaMap";
 import { Link } from "react-router-dom";
 import {
   LogIn,
@@ -459,7 +460,9 @@ export default function Landing() {
             />
           </Section>
         </div>
-
+        <Section title="Persebaran Peserta" desc={LOREM}>
+          <IndonesiaMap data={s?.province} />
+        </Section>
         <Section
           title="Jenis Pembiayaan"
           desc="pembiayaan yang digunakan oleh peserta fellowship"

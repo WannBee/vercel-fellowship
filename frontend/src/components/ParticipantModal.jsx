@@ -1,4 +1,12 @@
 import { useState, useEffect } from "react";
+import {
+  KSM,
+  FELLOWSHIP,
+  STATUS,
+  STATUS_LABEL,
+  FUNDING,
+  PROVINCES,
+} from "../constants/options";
 import { X } from "lucide-react";
 import {
   KSM,
@@ -21,6 +29,7 @@ const EMPTY = {
   status: "akan pendidikan",
 };
 const fromRow = (p) => ({
+  province: PROVINCES.includes(p.province) ? p.province : "",
   ...EMPTY,
   ...p,
   funding: p.funding || FUNDING[0],
@@ -48,10 +57,11 @@ const Input = ({ f, set, k, label, onChange, ...r }) => (
     />
   </div>
 );
-const Sel = ({ f, set, k, label, opts, labels }) => (
+const Sel = ({ f, set, k, label, opts, labels, placeholder }) => (
   <div>
     <Label>{label}</Label>
-    <select value={f[k]} onChange={set(k)} className={cls}>
+    <select required value={f[k]} onChange={set(k)} className={cls}>
+      {placeholder && <option value="">{placeholder}</option>}
       {opts.map((o) => (
         <option key={o} value={o}>
           {labels ? labels[o] : o}
@@ -147,12 +157,13 @@ export default function ParticipantModal({
               label="Asal Rumah Sakit"
               placeholder="RSUD Dr. Soetomo"
             />
-            <Input
+            <Sel
               f={f}
               set={set}
               k="province"
               label="Provinsi"
-              placeholder="Jawa Timur"
+              opts={PROVINCES}
+              placeholder="Pilih provinsi"
             />
             <Sel
               f={f}
