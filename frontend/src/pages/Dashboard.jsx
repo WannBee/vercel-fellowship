@@ -149,7 +149,7 @@ export default function Dashboard() {
           }}
           className={`${input} w-full sm:w-auto`}
         >
-          <option value="">Semua KSM/Instalasi</option>
+          <option value="">Semua Divisi/Departemen</option>
           {KSM.map((k) => (
             <option key={k}>{k}</option>
           ))}

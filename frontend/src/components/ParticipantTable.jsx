@@ -110,7 +110,7 @@ export default function ParticipantTable({
             <tr className="bg-slate-50/70 border-b border-slate-200 text-slate-600 text-xs font-semibold uppercase tracking-wider">
               {[
                 "Identitas & Kontak",
-                "KSM / Fellowship",
+                "Divisi/Departemen",
                 "Asal RS & Provinsi",
                 "Periode & Biaya",
                 "Status",
