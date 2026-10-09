@@ -32,7 +32,7 @@ import {
 
 const LOREM =
   "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.";
-const HERO_IMAGE = "/hero.jpg"; // taruh gambar Anda di frontend/public/hero.jpg
+const HERO_IMAGE = "/hero.png"; // taruh gambar Anda di frontend/public/hero.jpg
 
 const TONES = {
   indigo: "bg-indigo-50 text-indigo-600",
