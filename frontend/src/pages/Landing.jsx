@@ -307,6 +307,9 @@ function HeroVisual() {
 // ---------- Halaman ----------
 export default function Landing() {
   const { user } = useAuth();
+  const [expired, setExpired] = useState(
+    () => sessionStorage.getItem("expired") === "1",
+  );
   const [s, setS] = useState(null);
   const [error, setError] = useState(false);
   const [showAll, setShowAll] = useState(false);
@@ -375,6 +378,26 @@ export default function Landing() {
           </Link>
         </div>
       </header>
+
+      {expired && (
+        <div className="bg-amber-50 border-b border-amber-200 text-amber-800 text-sm">
+          <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between gap-3">
+            <span>
+              Sesi Anda berakhir karena tidak ada aktivitas. Silakan masuk
+              kembali.
+            </span>
+            <button
+              onClick={() => {
+                sessionStorage.removeItem("expired");
+                setExpired(false);
+              }}
+              className="font-semibold shrink-0"
+            >
+              Tutup
+            </button>
+          </div>
+        </div>
+      )}
 
       <section className="bg-indigo-800 text-white">
         <div className="max-w-7xl mx-auto px-4 pt-12 pb-32 sm:pt-16 sm:pb-36 grid lg:grid-cols-2 gap-10 items-center">

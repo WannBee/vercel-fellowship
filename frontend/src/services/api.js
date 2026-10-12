@@ -5,9 +5,6 @@ const baseURL =
   import.meta.env.VITE_API_URL ||
   (import.meta.env.DEV ? `http://${location.hostname}:4000` : "");
 
-if (!baseURL && !import.meta.env.DEV)
-  console.error("VITE_API_URL belum diisi saat build");
-
 const API = axios.create({ baseURL });
 
 API.interceptors.request.use((c) => {
@@ -17,15 +14,22 @@ API.interceptors.request.use((c) => {
 });
 
 API.interceptors.response.use(
-  (r) => r,
+  (r) => {
+    // Simpan token yang diperpanjang server (sliding session)
+    const fresh = r.headers["x-new-token"];
+    if (fresh) localStorage.setItem("token", fresh);
+    return r;
+  },
   (e) => {
     const publicPaths = ["/", "/login", "/register"];
     if (
       e.response?.status === 401 &&
       !publicPaths.includes(location.pathname)
     ) {
-      localStorage.removeItem("token");
-      localStorage.removeItem("user");
+      ["token", "user", "lastActivity"].forEach((k) =>
+        localStorage.removeItem(k),
+      );
+      sessionStorage.setItem("expired", "1");
       location.href = "/"; // sesi kedaluwarsa → landing page
     }
     return Promise.reject(e);

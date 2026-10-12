@@ -10,10 +10,12 @@ import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
 import Profile from "./pages/Profile";
 import Roles from "./pages/Roles";
+import useIdleLogout from "./hooks/useIdleLogout";
 
 function Layout() {
   const { user } = useAuth();
   const [open, setOpen] = useState(false);
+  useIdleLogout(!!user, logout);
   if (!user) return <Navigate to="/" replace />;
   return (
     <ParticipantsProvider>

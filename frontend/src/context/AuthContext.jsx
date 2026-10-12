@@ -12,9 +12,12 @@ export function AuthProvider({ children }) {
       return null;
     }
   });
+
   const persist = ({ token, user }) => {
     localStorage.setItem("token", token);
     localStorage.setItem("user", JSON.stringify(user));
+    localStorage.setItem("lastActivity", String(Date.now())); // mulai hitungan sesi baru
+    sessionStorage.removeItem("expired");
     setUser(user);
   };
   const login = async (f) =>
@@ -22,8 +25,9 @@ export function AuthProvider({ children }) {
   const register = async (f) =>
     persist((await API.post("/api/auth/register", f)).data);
   const logout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
+    ["token", "user", "lastActivity"].forEach((k) =>
+      localStorage.removeItem(k),
+    );
     setUser(null);
   };
   const updateProfile = async (name) => {
@@ -31,6 +35,7 @@ export function AuthProvider({ children }) {
     localStorage.setItem("user", JSON.stringify(data));
     setUser(data);
   };
+
   return (
     <Ctx.Provider value={{ user, login, register, logout, updateProfile }}>
       {children}
