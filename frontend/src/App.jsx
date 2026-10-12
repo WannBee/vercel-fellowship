@@ -3,6 +3,7 @@ import { Menu } from "lucide-react";
 import { Routes, Route, Navigate, Outlet } from "react-router-dom";
 import { useAuth } from "./context/AuthContext";
 import { ParticipantsProvider } from "./context/ParticipantsContext";
+import useIdleLogout from "./hooks/useIdleLogout";
 import Sidebar from "./components/Sidebar";
 import Landing from "./pages/Landing";
 import Login from "./pages/Login";
@@ -10,12 +11,11 @@ import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
 import Profile from "./pages/Profile";
 import Roles from "./pages/Roles";
-import useIdleLogout from "./hooks/useIdleLogout";
 
 function Layout() {
-  const { user } = useAuth();
+  const { user, logout } = useAuth(); // logout harus ikut diambil di sini
   const [open, setOpen] = useState(false);
-  useIdleLogout(!!user, logout);
+  useIdleLogout(!!user, logout); // hook dipanggil sebelum return bersyarat
   if (!user) return <Navigate to="/" replace />;
   return (
     <ParticipantsProvider>
