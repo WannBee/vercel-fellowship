@@ -36,6 +36,7 @@ export const FELLOWSHIP = [
   "Hand, Upper Limb and Microsurgery",
   "Foot and Ankle",
   "Sport Injury",
+  "spine",
   "Hip and Knee",
   "Kardiologi Intervensi",
   "Rekontruksi Urethra Pria",
