@@ -4,7 +4,7 @@ import { pool } from "../config/db.js";
 
 const sign = (u) =>
   jwt.sign({ id: u.id, role: u.role }, process.env.JWT_SECRET, {
-    expiresIn: "7d",
+    expiresIn: process.env.SESSION_TTL || "135m",
   });
 const pub = ({ password, ...u }) => u;
 

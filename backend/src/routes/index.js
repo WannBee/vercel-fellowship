@@ -13,6 +13,7 @@ const w = (fn) => (req, res, next) => fn(req, res).catch(next); // tangkap error
 r.post("/auth/register", w(a.register));
 r.post("/auth/login", w(a.login));
 r.get("/auth/me", auth, w(a.me));
+r.post("/auth/ping", auth, (_req, res) => res.status(204).end());
 
 //route chart
 r.get("/public/yearly", w(pub.yearly));
