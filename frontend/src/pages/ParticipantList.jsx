@@ -1,13 +1,20 @@
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
-import { ArrowLeft, Users, ChevronLeft, ChevronRight } from "lucide-react";
+import {
+  ArrowLeft,
+  Users,
+  ChevronLeft,
+  ChevronRight,
+  Search,
+  X,
+} from "lucide-react";
 import API from "../services/api";
 import { ALL_LABEL, STATUS_LABEL } from "../constants/options";
 
 const TYPES = {
   status: "Status Pelatihan",
   funding: "Jenis Pembiayaan",
-  ksm: "Divisi/Departemen",
+  ksm: "KSM / Instalasi",
   fellowship: "Jenis Fellowship",
 };
 const badge = {
@@ -21,10 +28,13 @@ function List({ by, value }) {
   const nav = useNavigate();
   const loc = useLocation();
   const [page, setPage] = useState(1);
+  const [q, setQ] = useState(""); // isi kolom pencarian (langsung)
+  const [dq, setDq] = useState(""); // kata kunci yang dikirim ke server (setelah jeda)
   const [data, setData] = useState({
     rows: [],
     total: 0,
     pages: 1,
+    page: 1,
     perPage: 20,
   });
   const [loading, setLoading] = useState(true);
@@ -33,16 +43,34 @@ function List({ by, value }) {
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
+
+  // Jeda 0,4 detik setelah berhenti mengetik, lalu kembali ke halaman 1
   useEffect(() => {
+    const t = setTimeout(() => {
+      setDq(q.trim());
+      setPage(1);
+    }, 400);
+    return () => clearTimeout(t);
+  }, [q]);
+
+  useEffect(() => {
+    let cancelled = false; // abaikan respons lama kalau kata kunci sudah berubah
     setLoading(true);
     setError(false);
     API.get("/api/public/participants", {
-      params: { ...(by ? { [by]: value } : {}), page },
+      params: {
+        ...(by ? { [by]: value } : {}),
+        ...(dq ? { q: dq } : {}),
+        page,
+      },
     })
-      .then((r) => setData(r.data))
-      .catch(() => setError(true))
-      .finally(() => setLoading(false));
-  }, [by, value, page]);
+      .then((r) => !cancelled && setData(r.data))
+      .catch(() => !cancelled && setError(true))
+      .finally(() => !cancelled && setLoading(false));
+    return () => {
+      cancelled = true;
+    };
+  }, [by, value, dq, page]);
 
   // Kalau halaman dibuka langsung dari tautan (tanpa riwayat), tombol kembali menuju beranda
   const goBack = () => (loc.key !== "default" ? nav(-1) : nav("/"));
@@ -81,8 +109,32 @@ function List({ by, value }) {
             {title}
           </h1>
           <p className="text-sm text-slate-500 mt-1">
-            {loading ? "Memuat..." : `${data.total} peserta`}
+            {loading
+              ? "Memuat..."
+              : dq
+                ? `${data.total} hasil untuk "${dq}"`
+                : `${data.total} peserta`}
           </p>
+        </div>
+
+        <div className="relative">
+          <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-3.5" />
+          <input
+            value={q}
+            onChange={(e) => setQ(e.target.value)}
+            placeholder="Cari nama peserta..."
+            autoComplete="off"
+            className="w-full pl-10 pr-10 py-2.5 rounded-xl border border-slate-200 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          />
+          {q && (
+            <button
+              onClick={() => setQ("")}
+              aria-label="Hapus pencarian"
+              className="absolute right-2.5 top-2 p-1 rounded-lg text-slate-400 hover:bg-slate-100 hover:text-slate-600"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          )}
         </div>
 
         {error ? (
@@ -106,7 +158,9 @@ function List({ by, value }) {
                       colSpan="3"
                       className="py-12 text-center text-slate-400"
                     >
-                      Belum ada peserta pada kategori ini.
+                      {dq
+                        ? `Tidak ada peserta dengan nama "${dq}".`
+                        : "Belum ada peserta pada kategori ini."}
                     </td>
                   </tr>
                 )}
@@ -167,6 +221,6 @@ export default function ParticipantList() {
   const [sp] = useSearchParams();
   const by = TYPES[sp.get("by")] ? sp.get("by") : null;
   const value = by ? sp.get("value") || "" : "";
-  // key membuat halaman diatur ulang (kembali ke halaman 1) kalau kategori berubah
+  // key membuat halaman (termasuk kolom pencarian) diatur ulang kalau kategori berubah
   return <List key={`${by}:${value}`} by={by} value={value} />;
 }
