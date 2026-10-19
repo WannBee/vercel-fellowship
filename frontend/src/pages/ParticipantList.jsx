@@ -7,7 +7,7 @@ import { ALL_LABEL, STATUS_LABEL } from "../constants/options";
 const TYPES = {
   status: "Status Pelatihan",
   funding: "Jenis Pembiayaan",
-  ksm: "KSM / Instalasi",
+  ksm: "Divisi/Departemen",
   fellowship: "Jenis Fellowship",
 };
 const badge = {
