@@ -1,25 +1,19 @@
 import { pool } from "../config/db.js";
 
-const COLS =
-  "id, name, ksm, fellowship, hospital, province, funding, period_start, period_end, status";
-const PER_PAGE = 10;
+const COLS = "id, name, status"; // hanya yang ditampilkan di halaman daftar
+const PER_PAGE = 20;
+const FILTERS = ["status", "funding", "ksm", "fellowship"]; // whitelist kolom penyaring
 
+// GET /api/public/participants?status=...&funding=...&ksm=...&fellowship=...&page=1
 export async function list(req, res) {
-  const { status, ksm, q } = req.query;
   const params = [];
   let where = "TRUE";
-  if (status) {
-    params.push(status);
-    where += ` AND status=$${params.length}`;
-  }
-  if (ksm) {
-    params.push(ksm);
-    where += ` AND ksm=$${params.length}`;
-  }
-  if (q) {
-    params.push(`%${q}%`);
-    const n = params.length;
-    where += ` AND (name ILIKE $${n} OR hospital ILIKE $${n} OR province ILIKE $${n} OR fellowship ILIKE $${n} OR funding ILIKE $${n})`;
+  for (const col of FILTERS) {
+    const v = req.query[col];
+    if (v) {
+      params.push(String(v));
+      where += ` AND ${col}=$${params.length}`;
+    }
   }
   const page = Math.max(1, parseInt(req.query.page) || 1);
   const total = (
@@ -31,7 +25,7 @@ export async function list(req, res) {
   params.push(PER_PAGE, (page - 1) * PER_PAGE);
   const rows = (
     await pool.query(
-      `SELECT ${COLS} FROM participants WHERE ${where} ORDER BY created_at DESC LIMIT $${params.length - 1} OFFSET $${params.length}`,
+      `SELECT ${COLS} FROM participants WHERE ${where} ORDER BY name LIMIT $${params.length - 1} OFFSET $${params.length}`,
       params,
     )
   ).rows;
@@ -39,6 +33,7 @@ export async function list(req, res) {
     rows,
     total,
     page,
+    perPage: PER_PAGE,
     pages: Math.max(1, Math.ceil(total / PER_PAGE)),
   });
 }
@@ -69,7 +64,7 @@ const GROUPS = {
   fellowship: "fellowship",
 };
 
-// GET /api/public/yearly?group=status  → [{ year: 2026, counts: { 'telah lulus': 3, cuti: 1 } }, ...]
+// GET /api/public/yearly?group=status
 export async function yearly(req, res) {
   const col = GROUPS[req.query.group] || "status"; // whitelist, bukan input mentah
   const { rows } = await pool.query(
