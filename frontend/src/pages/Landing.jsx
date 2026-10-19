@@ -97,11 +97,16 @@ const Section = ({ title, desc, children, onDark = false }) => (
   </section>
 );
 
-const InfoCard = ({ label, value, icon: Icon, tone = "indigo" }) => (
-  <div
-    title={label}
-    className="group h-48 flex flex-col rounded-2xl p-4 border border-slate-200 bg-white shadow-sm cursor-default transition-all duration-300 hover:shadow-lg hover:-translate-y-1 hover:border-transparent hover:bg-gradient-to-br hover:from-indigo-600 hover:to-purple-700"
+const listUrl = (by, value) =>
+  by ? `/peserta?by=${by}&value=${encodeURIComponent(value)}` : "/peserta";
+
+const InfoCard = ({ label, value, icon: Icon, tone = "indigo", to }) => (
+  <Link
+    to={to}
+    title={`${label}: lihat daftar peserta`}
+    className="group relative h-48 flex flex-col rounded-2xl p-4 border border-slate-200 bg-white shadow-sm cursor-pointer transition-all duration-300 hover:shadow-lg hover:-translate-y-1 hover:border-transparent hover:bg-gradient-to-br hover:from-indigo-600 hover:to-purple-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
   >
+    <ArrowRight className="absolute top-4 right-4 w-5 h-5 text-white opacity-0 -translate-x-1 transition-all duration-300 group-hover:opacity-100 group-hover:translate-x-0" />
     <div
       className={`w-11 h-11 shrink-0 rounded-xl flex items-center justify-center transition-colors duration-300 group-hover:bg-white/20 group-hover:text-white ${TONES[tone]}`}
     >
@@ -113,7 +118,7 @@ const InfoCard = ({ label, value, icon: Icon, tone = "indigo" }) => (
     <p className="text-sm mt-1 leading-snug text-slate-500 line-clamp-3 break-words transition-colors duration-300 group-hover:text-indigo-100">
       {label}
     </p>
-  </div>
+  </Link>
 );
 
 // Grafik batang bertumpuk per tahun (untuk kategori sedikit: status, pembiayaan)
@@ -450,30 +455,35 @@ export default function Landing() {
                 value={s?.total}
                 icon={Users}
                 tone="indigo"
+                to={listUrl()}
               />
               <InfoCard
                 label={STATUS_LABEL["telah lulus"]}
                 value={st["telah lulus"] ?? (s ? 0 : undefined)}
                 icon={GraduationCap}
                 tone="emerald"
+                to={listUrl("status", "telah lulus")}
               />
               <InfoCard
                 label={STATUS_LABEL["sedang pendidikan"]}
                 value={st["sedang pendidikan"] ?? (s ? 0 : undefined)}
                 icon={PlayCircle}
                 tone="purple"
+                to={listUrl("status", "sedang pendidikan")}
               />
               <InfoCard
                 label={STATUS_LABEL["akan pendidikan"]}
                 value={st["akan pendidikan"] ?? (s ? 0 : undefined)}
                 icon={UserPlus}
                 tone="blue"
+                to={listUrl("status", "akan pendidikan")}
               />
               <InfoCard
                 label={STATUS_LABEL.cuti}
                 value={st.cuti ?? (s ? 0 : undefined)}
                 icon={Clock}
                 tone="amber"
+                to={listUrl("status", "cuti")}
               />
             </div>
             <StackedBarChart
@@ -495,6 +505,7 @@ export default function Landing() {
               <InfoCard
                 key={f}
                 label={f}
+                to={listUrl("funding", f)}
                 value={s ? (s.funding?.[f] ?? 0) : undefined}
                 icon={fundingIcons[i % fundingIcons.length]}
                 tone={fundingTones[i % fundingTones.length]}
@@ -517,6 +528,7 @@ export default function Landing() {
               <InfoCard
                 key={k}
                 label={k}
+                to={listUrl("ksm", k)}
                 value={s ? (s.ksm?.[k] ?? 0) : undefined}
                 icon={Building2}
                 tone="blue"
@@ -542,6 +554,7 @@ export default function Landing() {
               <InfoCard
                 key={f}
                 label={f}
+                to={listUrl("fellowship", f)}
                 value={s ? (s.fellowship?.[f] ?? 0) : undefined}
                 icon={Award}
                 tone="purple"

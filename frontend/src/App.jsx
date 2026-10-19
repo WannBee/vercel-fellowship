@@ -5,6 +5,7 @@ import { useAuth } from "./context/AuthContext";
 import { ParticipantsProvider } from "./context/ParticipantsContext";
 import useIdleLogout from "./hooks/useIdleLogout";
 import Sidebar from "./components/Sidebar";
+import ParticipantList from "./pages/ParticipantList";
 import Landing from "./pages/Landing";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
@@ -50,6 +51,7 @@ export default function App() {
       <Route path="/" element={<Landing />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
+      <Route path="/peserta" element={<ParticipantList />} />
       <Route element={<Layout />}>
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/profile" element={<Profile />} />
