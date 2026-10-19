@@ -414,7 +414,7 @@ export default function Landing() {
             <h1 className="text-3xl sm:text-5xl font-bold mt-4 leading-tight">
               Data Peserta Fellowship
             </h1>
-            <p className="mt-4 text-indigo-100 max-w-xl">
+            <p className="mt-4 text-indigo-100 max-w-xl text-justify">
               Halaman ini menyajikan data komprehensif mengenai profil dan
               sebaran peserta Program Fellowship Medis. Informasi mencakup total
               partisipan berdasarkan status pendidikan, persebaran geografis,
@@ -423,7 +423,7 @@ export default function Landing() {
               disajikan untuk memberikan transparansi dan gambaran utuh mengenai
               perkembangan sumber daya manusia kesehatan.
             </p>
-            <p className="mt-3 text-indigo-100/80 max-w-xl text-sm">
+            <p className="mt-3 text-indigo-100/80 max-w-xl text-sm text-justify">
               Ringkasan data dan statistik terkini mengenai peserta Program
               Fellowship, mencakup status kelulusan, persebaran wilayah, sumber
               pembiayaan, serta spesialisasi dan sub-spesialisasi medis yang
