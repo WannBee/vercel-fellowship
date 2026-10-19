@@ -5,6 +5,7 @@ const PER_PAGE = 20;
 const FILTERS = ["status", "funding", "ksm", "fellowship"]; // whitelist kolom penyaring
 
 // GET /api/public/participants?status=...&funding=...&ksm=...&fellowship=...&page=1
+// GET /api/public/participants?status=...&funding=...&ksm=...&fellowship=...&q=...&page=1
 export async function list(req, res) {
   const params = [];
   let where = "TRUE";
@@ -14,6 +15,14 @@ export async function list(req, res) {
       params.push(String(v));
       where += ` AND ${col}=$${params.length}`;
     }
+  }
+  const q = String(req.query.q || "")
+    .trim()
+    .slice(0, 100);
+  if (q) {
+    // karakter khusus LIKE (% dan _) di-escape agar dibaca sebagai teks biasa
+    params.push(`%${q.replace(/[\\%_]/g, "\\$&")}%`);
+    where += ` AND name ILIKE $${params.length}`;
   }
   const page = Math.max(1, parseInt(req.query.page) || 1);
   const total = (
