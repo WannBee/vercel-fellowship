@@ -506,7 +506,10 @@ export default function Landing() {
             />
           </Section>
         </div>
-        <Section title="Persebaran Peserta" desc={LOREM}>
+        <Section
+          title="Persebaran Peserta"
+          desc="di bawah ini merupakan gambaran persebaran peserta yang pernah mengikuti pelatihan/fellowship"
+        >
           <IndonesiaMap data={s?.province} />
         </Section>
         <Section
