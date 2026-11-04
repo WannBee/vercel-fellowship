@@ -4,7 +4,7 @@ import { auth, requireRole } from "../middleware/auth.js";
 import * as a from "../controllers/authController.js";
 import * as u from "../controllers/userController.js";
 import * as p from "../controllers/participantController.js";
-import * as pub from "../controllers/PublicController.js";
+import * as pub from "../controllers/publicController.js";
 
 const r = Router();
 const w = (fn) => (req, res, next) => fn(req, res).catch(next); // tangkap error async
@@ -15,16 +15,14 @@ r.post("/auth/login", w(a.login));
 r.get("/auth/me", auth, w(a.me));
 r.post("/auth/ping", auth, (_req, res) => res.status(204).end());
 
-//route chart
-r.get("/public/yearly", w(pub.yearly));
-
 // Publik (tanpa login, hanya membaca)
 r.get("/public/participants", w(pub.list));
 r.get("/public/stats", w(pub.stats));
+r.get("/public/yearly", w(pub.yearly));
 
-// Users
+// Users (rute tetap harus di atas '/users/:id')
 r.put("/users/profile", auth, w(u.updateProfile));
-r.put("/users/password", auth, w(u.changePassword)); // harus di atas '/users/:id'
+r.put("/users/password", auth, w(u.changePassword));
 r.get("/users", auth, requireRole("admin"), w(u.list));
 r.put("/users/:id", auth, requireRole("admin"), w(u.updateUser));
 r.patch("/users/:id/role", auth, requireRole("admin"), w(u.updateRole));

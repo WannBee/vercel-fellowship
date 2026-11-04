@@ -2,18 +2,20 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { pool } from "../config/db.js";
 
-const MAX_ATTEMPTS = 5;
-
+const TTL = process.env.SESSION_TTL || "135m";
+const MAX_ATTEMPTS = 5; // 5 kali salah → dikunci 15 menit
 const sign = (u) =>
   jwt.sign({ id: u.id, role: u.role }, process.env.JWT_SECRET, {
-    expiresIn: process.env.SESSION_TTL || "135m",
+    expiresIn: TTL,
   });
-const pub = ({ password, ...u }) => u;
+const pub = ({ password, failed_attempts, locked_until, ...u }) => u;
 
 export async function register(req, res) {
   const { name, email, password } = req.body;
   if (!name || !email || !password)
     return res.status(400).json({ message: "Data tidak lengkap" });
+  if (password.length < 6)
+    return res.status(400).json({ message: "Password minimal 6 karakter" });
   const dup = await pool.query("SELECT 1 FROM users WHERE email=$1", [email]);
   if (dup.rowCount)
     return res.status(409).json({ message: "Email sudah terdaftar" });
@@ -33,6 +35,7 @@ export async function register(req, res) {
   );
   res.status(201).json({ token: sign(u), user: pub(u) });
 }
+
 export async function login(req, res) {
   const { email, password } = req.body;
   const {
@@ -66,6 +69,7 @@ export async function login(req, res) {
   );
   res.json({ token: sign(u), user: pub(u) });
 }
+
 export async function me(req, res) {
   const {
     rows: [u],
