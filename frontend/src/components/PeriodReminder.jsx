@@ -1,5 +1,5 @@
 import { CalendarClock } from "lucide-react";
-import { formatPeriod } from "../utils/formatDate";
+import { formatPeriod } from "../utils/FormatDate";
 
 const DAY = 86400000;
 const WINDOW_DAYS = 30;
