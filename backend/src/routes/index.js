@@ -4,7 +4,7 @@ import { auth, requireRole } from "../middleware/auth.js";
 import * as a from "../controllers/authController.js";
 import * as u from "../controllers/userController.js";
 import * as p from "../controllers/participantController.js";
-import * as pub from "../controllers/publicController.js";
+import * as pub from "../controllers/PublicController.js";
 
 const r = Router();
 const w = (fn) => (req, res, next) => fn(req, res).catch(next); // tangkap error async
