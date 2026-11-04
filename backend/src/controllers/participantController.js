@@ -10,6 +10,7 @@ const F = [
   "period_start",
   "period_end",
   "status",
+  "is_public",
 ];
 const scope = (req) =>
   req.user.role === "admin" ? ["TRUE", []] : ["owner_id=$1", [req.user.id]];

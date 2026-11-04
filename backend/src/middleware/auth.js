@@ -1,35 +1,36 @@
-import jwt from "jsonwebtoken";
+const STATUS = ["telah lulus", "sedang pendidikan", "cuti", "akan pendidikan"];
+const REQUIRED = [
+  "name",
+  "ksm",
+  "hospital",
+  "province",
+  "fellowship",
+  "funding",
+  "period_start",
+  "period_end",
+];
+const isDate = (s) =>
+  /^\d{4}-\d{2}-\d{2}$/.test(s) && !Number.isNaN(Date.parse(s));
 
-// Masa berlaku token. Sengaja 15 menit lebih panjang dari batas idle di frontend (2 jam),
-// karena perpanjangan token terjadi berkala, bukan di setiap detik aktivitas.
-const TTL = process.env.SESSION_TTL || "135m";
-
-export const auth = (req, res, next) => {
-  const t = (req.headers.authorization || "").replace("Bearer ", "");
-  try {
-    const p = jwt.verify(t, process.env.JWT_SECRET);
-    req.user = p;
-    // Sliding session: kalau token sudah lebih dari 10 menit sejak diterbitkan, kirim token baru
-    if (Date.now() / 1000 - p.iat > 600) {
-      const fresh = jwt.sign(
-        { id: p.id, role: p.role },
-        process.env.JWT_SECRET,
-        { expiresIn: TTL },
-      );
-      res.setHeader("X-New-Token", fresh);
-    }
-    next();
-  } catch (e) {
-    res.status(401).json({
-      message:
-        e.name === "TokenExpiredError"
-          ? "Sesi berakhir, silakan login kembali"
-          : "Unauthorized",
-    });
-  }
+export const validateParticipant = (req, res, next) => {
+  const b = req.body;
+  const missing = REQUIRED.filter((k) => !String(b[k] ?? "").trim());
+  if (missing.length)
+    return res
+      .status(400)
+      .json({ message: `Field wajib diisi: ${missing.join(", ")}` });
+  if (!STATUS.includes(b.status))
+    return res.status(400).json({ message: "Status tidak valid" });
+  if (String(b.funding).length > 100)
+    return res.status(400).json({ message: "Sumber biaya terlalu panjang" });
+  if (!isDate(b.period_start) || !isDate(b.period_end))
+    return res
+      .status(400)
+      .json({ message: "Format tanggal periode tidak valid" });
+  if (b.period_end < b.period_start)
+    return res
+      .status(400)
+      .json({ message: "Tanggal selesai tidak boleh sebelum tanggal mulai" });
+  b.is_public = !(b.is_public === false || b.is_public === "false"); // selalu boolean, default tampil
+  next();
 };
-
-export const requireRole = (role) => (req, res, next) =>
-  req.user.role === role
-    ? next()
-    : res.status(403).json({ message: "Forbidden" });

@@ -87,3 +87,31 @@ export async function removeUser(req, res) {
     ? res.status(204).end()
     : res.status(404).json({ message: "User tidak ditemukan" });
 }
+
+const MIN_PASSWORD = 6;
+
+// Pengguna mengganti password sendiri
+export async function changePassword(req, res) {
+  const { currentPassword, newPassword } = req.body;
+  if (!currentPassword || !newPassword)
+    return res.status(400).json({ message: "Semua field wajib diisi" });
+  if (newPassword.length < MIN_PASSWORD)
+    return res
+      .status(400)
+      .json({ message: `Password baru minimal ${MIN_PASSWORD} karakter` });
+  if (newPassword === currentPassword)
+    return res
+      .status(400)
+      .json({ message: "Password baru harus berbeda dari yang lama" });
+  const {
+    rows: [u],
+  } = await pool.query("SELECT password FROM users WHERE id=$1", [req.user.id]);
+  // Sengaja 400, bukan 401: interceptor frontend menganggap 401 sebagai sesi berakhir dan akan logout
+  if (!u || !(await bcrypt.compare(currentPassword, u.password)))
+    return res.status(400).json({ message: "Password saat ini salah" });
+  await pool.query("UPDATE users SET password=$1 WHERE id=$2", [
+    await bcrypt.hash(newPassword, 10),
+    req.user.id,
+  ]);
+  res.status(204).end();
+}

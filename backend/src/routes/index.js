@@ -23,7 +23,8 @@ r.get("/public/participants", w(pub.list));
 r.get("/public/stats", w(pub.stats));
 
 // Users
-r.put("/users/profile", auth, w(u.updateProfile)); // harus di atas '/users/:id'
+r.put("/users/profile", auth, w(u.updateProfile));
+r.put("/users/password", auth, w(u.changePassword)); // harus di atas '/users/:id'
 r.get("/users", auth, requireRole("admin"), w(u.list));
 r.put("/users/:id", auth, requireRole("admin"), w(u.updateUser));
 r.patch("/users/:id/role", auth, requireRole("admin"), w(u.updateRole));

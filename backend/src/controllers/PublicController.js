@@ -3,12 +3,23 @@ import { pool } from "../config/db.js";
 const COLS = "id, name, status"; // hanya yang ditampilkan di halaman daftar
 const PER_PAGE = 20;
 const FILTERS = ["status", "funding", "ksm", "fellowship"]; // whitelist kolom penyaring
+const GROUPS = {
+  status: "status",
+  funding: "funding",
+  ksm: "ksm",
+  fellowship: "fellowship",
+};
 
-// GET /api/public/participants?status=...&funding=...&ksm=...&fellowship=...&page=1
-// GET /api/public/participants?status=...&funding=...&ksm=...&fellowship=...&q=...&page=1
+// Cache di CDN Vercel (bukan di browser). Data di landing bisa tertunda sampai `s` detik.
+const cache = (res, s) =>
+  res.set(
+    "Cache-Control",
+    `public, s-maxage=${s}, stale-while-revalidate=${s * 2}`,
+  );
+
 export async function list(req, res) {
   const params = [];
-  let where = "TRUE";
+  let where = "is_public";
   for (const col of FILTERS) {
     const v = req.query[col];
     if (v) {
@@ -20,7 +31,6 @@ export async function list(req, res) {
     .trim()
     .slice(0, 100);
   if (q) {
-    // karakter khusus LIKE (% dan _) di-escape agar dibaca sebagai teks biasa
     params.push(`%${q.replace(/[\\%_]/g, "\\$&")}%`);
     where += ` AND name ILIKE $${params.length}`;
   }
@@ -38,6 +48,7 @@ export async function list(req, res) {
       params,
     )
   ).rows;
+  cache(res, 60);
   res.json({
     rows,
     total,
@@ -51,7 +62,7 @@ export async function stats(_req, res) {
   // nama kolom di bawah literal tetap (bukan input user), jadi aman
   const count = async (col) => {
     const { rows } = await pool.query(
-      `SELECT ${col} AS k, COUNT(*)::int AS n FROM participants WHERE ${col} IS NOT NULL GROUP BY ${col}`,
+      `SELECT ${col} AS k, COUNT(*)::int AS n FROM participants WHERE is_public AND ${col} IS NOT NULL GROUP BY ${col}`,
     );
     return Object.fromEntries(rows.map((r) => [r.k, r.n]));
   };
@@ -63,26 +74,20 @@ export async function stats(_req, res) {
     count("province"),
   ]);
   const total = Object.values(status).reduce((a, b) => a + b, 0);
+  cache(res, 300);
   res.json({ total, status, funding, ksm, fellowship, province });
 }
 
-const GROUPS = {
-  status: "status",
-  funding: "funding",
-  ksm: "ksm",
-  fellowship: "fellowship",
-};
-
-// GET /api/public/yearly?group=status
 export async function yearly(req, res) {
-  const col = GROUPS[req.query.group] || "status"; // whitelist, bukan input mentah
+  const col = GROUPS[req.query.group] || "status";
   const { rows } = await pool.query(
     `SELECT EXTRACT(YEAR FROM period_start)::int AS year, ${col} AS k, COUNT(*)::int AS n
-     FROM participants WHERE period_start IS NOT NULL AND ${col} IS NOT NULL
+     FROM participants WHERE is_public AND period_start IS NOT NULL AND ${col} IS NOT NULL
      GROUP BY 1, 2 ORDER BY 1`,
   );
   const byYear = {};
   for (const r of rows)
     (byYear[r.year] ??= { year: r.year, counts: {} }).counts[r.k] = r.n;
+  cache(res, 300);
   res.json(Object.values(byYear));
 }
