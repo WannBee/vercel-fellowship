@@ -4,7 +4,6 @@ import { Link } from "react-router-dom";
 import {
   LogIn,
   LayoutDashboard,
-  Users,
   GraduationCap,
   PlayCircle,
   UserPlus,
