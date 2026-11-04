@@ -11,7 +11,7 @@ import {
   ChevronDown,
 } from "lucide-react";
 import { STATUS, STATUS_LABEL } from "../constants/options";
-import { formatPeriod } from "../utils/FormatDate";
+import { formatPeriod } from "../utils/FormatDate ";
 
 const badge = {
   "akan pendidikan": "bg-blue-100 text-blue-700 border-blue-200",
