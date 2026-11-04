@@ -16,6 +16,7 @@ const TYPES = {
   funding: "Jenis Pembiayaan",
   ksm: "KSM / Instalasi",
   fellowship: "Jenis Fellowship",
+  province: "Provinsi",
 };
 const badge = {
   "akan pendidikan": "bg-blue-100 text-blue-700 border-blue-200",

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import PeriodReminder from "../components/PeriodReminder";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import {
   Search,
@@ -127,7 +128,12 @@ export default function Dashboard() {
           ))}
         </div>
       )}
-
+      {filter === "Semua" && (
+        <PeriodReminder
+          rows={rows}
+          onEdit={(item) => setModal({ open: true, item })}
+        />
+      )}
       <div className="flex flex-wrap gap-3">
         <div className="relative flex-1 min-w-[220px]">
           <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-3.5" />

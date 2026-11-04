@@ -100,26 +100,29 @@ const Section = ({ title, desc, children, onDark = false }) => (
 const listUrl = (by, value) =>
   by ? `/peserta?by=${by}&value=${encodeURIComponent(value)}` : "/peserta";
 
-const InfoCard = ({ label, value, icon: Icon, tone = "indigo", to }) => (
-  <Link
-    to={to}
-    title={`${label}: lihat daftar peserta`}
-    className="group relative h-48 flex flex-col rounded-2xl p-4 border border-slate-200 bg-white shadow-sm cursor-pointer transition-all duration-300 hover:shadow-lg hover:-translate-y-1 hover:border-transparent hover:bg-gradient-to-br hover:from-indigo-600 hover:to-purple-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
-  >
-    <ArrowRight className="absolute top-4 right-4 w-5 h-5 text-white opacity-0 -translate-x-1 transition-all duration-300 group-hover:opacity-100 group-hover:translate-x-0" />
-    <div
-      className={`w-11 h-11 shrink-0 rounded-xl flex items-center justify-center transition-colors duration-300 group-hover:bg-white/20 group-hover:text-white ${TONES[tone]}`}
+const InfoCard = ({ label, value, icon: Icon, tone = "indigo", to }) => {
+  const shown = useCountUp(value);
+  return (
+    <Link
+      to={to}
+      title={`${label}: lihat daftar peserta`}
+      className="group relative h-48 flex flex-col rounded-2xl p-4 border border-slate-200 bg-white shadow-sm cursor-pointer transition-all duration-300 hover:shadow-lg hover:-translate-y-1 hover:border-transparent hover:bg-gradient-to-br hover:from-indigo-600 hover:to-purple-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
     >
-      <Icon className="w-6 h-6" />
-    </div>
-    <p className="text-3xl font-bold mt-3 text-slate-800 transition-colors duration-300 group-hover:text-white">
-      {value ?? "–"}
-    </p>
-    <p className="text-sm mt-1 leading-snug text-slate-500 line-clamp-3 break-words transition-colors duration-300 group-hover:text-indigo-100">
-      {label}
-    </p>
-  </Link>
-);
+      <ArrowRight className="absolute top-4 right-4 w-5 h-5 text-white opacity-0 -translate-x-1 transition-all duration-300 group-hover:opacity-100 group-hover:translate-x-0" />
+      <div
+        className={`w-11 h-11 shrink-0 rounded-xl flex items-center justify-center transition-colors duration-300 group-hover:bg-white/20 group-hover:text-white ${TONES[tone]}`}
+      >
+        <Icon className="w-6 h-6" />
+      </div>
+      <p className="text-3xl font-bold mt-3 text-slate-800 transition-colors duration-300 group-hover:text-white">
+        {shown ?? "–"}
+      </p>
+      <p className="text-sm mt-1 leading-snug text-slate-500 line-clamp-3 break-words transition-colors duration-300 group-hover:text-indigo-100">
+        {label}
+      </p>
+    </Link>
+  );
+};
 
 // Grafik batang bertumpuk per tahun (untuk kategori sedikit: status, pembiayaan)
 const StackedBarChart = ({ title, rows, series }) => {
@@ -307,6 +310,27 @@ function HeroVisual() {
       <GraduationCap className="absolute bottom-8 right-8 w-14 h-14 text-amber-200" />
     </div>
   );
+}
+function useCountUp(target, duration = 800) {
+  const [n, setN] = useState(0);
+  useEffect(() => {
+    if (typeof target !== "number") return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      setN(target);
+      return;
+    }
+    let raf;
+    let start;
+    const step = (t) => {
+      if (start === undefined) start = t;
+      const p = Math.min((t - start) / duration, 1);
+      setN(Math.round(target * (1 - Math.pow(1 - p, 3)))); // melambat di akhir
+      if (p < 1) raf = requestAnimationFrame(step);
+    };
+    raf = requestAnimationFrame(step);
+    return () => cancelAnimationFrame(raf);
+  }, [target, duration]);
+  return typeof target === "number" ? n : null;
 }
 
 // ---------- Halaman ----------

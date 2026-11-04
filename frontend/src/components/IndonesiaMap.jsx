@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { geoMercator, geoPath } from "d3-geo";
-import { MapPin } from "lucide-react";
+import { MapPin, ArrowRight } from "lucide-react";
 import { PROVINCES } from "../constants/options";
 
 const W = 960,
@@ -39,7 +40,6 @@ const KEYS = [
   "Province",
   "province",
   "WADMPR",
-  "Propinsi",
 ];
 const nameOf = (p) => {
   const props = p || {};
@@ -80,9 +80,13 @@ function rewind(geo) {
 }
 
 export default function IndonesiaMap({ data }) {
+  const nav = useNavigate();
   const [geo, setGeo] = useState(null);
   const [failed, setFailed] = useState("");
   const [hover, setHover] = useState(null);
+  const canHover =
+    typeof window !== "undefined" &&
+    window.matchMedia("(hover: hover)").matches;
 
   useEffect(() => {
     fetch("/indonesia-38.geojson")
@@ -136,17 +140,35 @@ export default function IndonesiaMap({ data }) {
 
   const max = Math.max(1, ...Object.values(counts));
   const fill = (n) =>
-    n ? `rgba(7,125,137,${0.25 + 0.75 * (n / max)})` : "#e2e8f0";
+    n ? `rgba(79,70,229,${0.25 + 0.75 * (n / max)})` : "#e2e8f0";
+  const sampleKeys = geo?.features?.[0]?.properties
+    ? Object.keys(geo.features[0].properties).join(", ")
+    : "-";
+  const openList = (name) =>
+    nav(`/peserta?by=province&value=${encodeURIComponent(name)}`);
 
   return (
     <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 sm:p-6">
       <div className="flex items-center justify-between gap-3 mb-3 min-h-[2.5rem]">
-        <p className="flex items-center gap-2 text-sm font-medium text-slate-700">
-          <MapPin className="w-4 h-4 text-indigo-600 shrink-0" />
-          {hover
-            ? `${hover.name}: ${hover.count} peserta`
-            : "Arahkan kursor atau ketuk sebuah provinsi"}
-        </p>
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+          <p className="flex items-center gap-2 text-sm font-medium text-slate-700">
+            <MapPin className="w-4 h-4 text-indigo-600 shrink-0" />
+            {hover
+              ? `${hover.name}: ${hover.count} peserta`
+              : canHover
+                ? "Arahkan kursor ke provinsi, klik untuk melihat daftar peserta"
+                : "Ketuk sebuah provinsi"}
+          </p>
+          {hover && hover.count > 0 && (
+            <button
+              onClick={() => openList(hover.name)}
+              className="inline-flex items-center gap-1 text-xs font-semibold text-indigo-600 hover:text-indigo-700"
+            >
+              Lihat daftar
+              <ArrowRight className="w-3.5 h-3.5" />
+            </button>
+          )}
+        </div>
         <div className="hidden sm:flex items-center gap-2 text-xs text-slate-500 shrink-0">
           sedikit
           <span className="w-24 h-2 rounded-full bg-gradient-to-r from-indigo-200 to-indigo-600" />
@@ -183,9 +205,13 @@ export default function IndonesiaMap({ data }) {
                 fill={fill(n)}
                 stroke={active ? "#1e293b" : "#ffffff"}
                 strokeWidth={active ? 1.4 : 0.6}
-                className="cursor-pointer transition-colors"
+                className={`transition-colors ${n ? "cursor-pointer" : "cursor-default"}`}
                 onMouseEnter={() => setHover({ name: p.name, count: n })}
-                onClick={() => setHover({ name: p.name, count: n })}
+                onClick={() =>
+                  canHover
+                    ? n > 0 && openList(p.name)
+                    : setHover({ name: p.name, count: n })
+                }
               />
             );
           })}
