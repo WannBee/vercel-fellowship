@@ -6,6 +6,7 @@ import {
   Calendar,
   Award,
   Wallet,
+  EyeOff,
 } from "lucide-react";
 import { STATUS, STATUS_LABEL } from "../constants/options";
 import { formatPeriod } from "../utils/FormatDate";
@@ -22,6 +23,13 @@ const Meta = ({ icon: I, children, cls = "text-slate-500" }) => (
     <span className="break-words min-w-0">{children}</span>
   </div>
 );
+const HiddenTag = ({ p }) =>
+  p.is_public === false ? (
+    <span className="ml-2 inline-flex items-center gap-1 text-[11px] font-medium text-slate-500 bg-slate-100 rounded-full px-2 py-0.5 align-middle">
+      <EyeOff className="w-3 h-3" />
+      Tersembunyi
+    </span>
+  ) : null;
 const StatusSelect = ({ p, onChange }) => (
   <select
     value={p.status}
@@ -81,6 +89,7 @@ export default function ParticipantTable({
                 <div className="font-semibold text-slate-900 break-words">
                   {p.name}
                 </div>
+                <HiddenTag p={p} />
                 <div className="text-sm font-medium text-indigo-600 mt-0.5">
                   {p.ksm}
                 </div>
@@ -128,6 +137,7 @@ export default function ParticipantTable({
                 <td className="py-4 px-6">
                   <div className="font-semibold text-slate-900">{p.name}</div>
                 </td>
+                <HiddenTag p={p} />
                 <td className="py-4 px-6">
                   <div className="font-medium text-indigo-600">{p.ksm}</div>
                   <Meta icon={Award}>{p.fellowship}</Meta>

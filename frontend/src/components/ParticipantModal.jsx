@@ -20,6 +20,7 @@ const EMPTY = {
   period_start: "",
   period_end: "",
   status: "akan pendidikan",
+  is_puclic: true,
 };
 const fromRow = (p) => ({
   province: PROVINCES.includes(p.province) ? p.province : "",
@@ -28,6 +29,7 @@ const fromRow = (p) => ({
   funding: p.funding || FUNDING[0],
   period_start: p.period_start || "",
   period_end: p.period_end || "",
+  is_public: p.is_public !== false,
 });
 const cls =
   "w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500";
@@ -190,6 +192,21 @@ export default function ParticipantModal({
               min={f.period_start || undefined}
             />
           </div>
+          <label className="flex items-start gap-3 p-3 rounded-xl border border-slate-200 bg-slate-50 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={f.is_public}
+              onChange={(e) => setF({ ...f, is_public: e.target.checked })}
+              className="mt-0.5 rounded border-slate-300"
+            />
+            <span className="text-sm text-slate-700">
+              <b>Tampilkan di halaman publik</b>
+              <span className="block text-xs text-slate-500">
+                Jika dimatikan, peserta tidak muncul di landing page, grafik,
+                peta, dan daftar publik.
+              </span>
+            </span>
+          </label>
           <div className="pt-4 flex justify-end gap-3 border-t border-slate-100">
             <button
               type="button"
