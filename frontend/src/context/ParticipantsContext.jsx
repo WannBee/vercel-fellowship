@@ -37,6 +37,20 @@ export function ParticipantsProvider({ children }) {
     await API.delete(`/api/participants/${id}`);
     await load();
   };
+  const bulkStatus = async (ids, status) => {
+    await API.post("/api/participants/bulk", { action: "status", ids, status });
+    await load();
+  };
+  const bulkRemove = async (ids) => {
+    await API.post("/api/participants/bulk", { action: "delete", ids });
+    await load();
+  };
+  const importRows = async (data) => {
+    const r = await API.post("/api/participants/import", { rows: data });
+    await load();
+    return r.data;
+  };
+
   const counts = {
     Semua: rows.length,
     ...Object.fromEntries(
@@ -44,7 +58,19 @@ export function ParticipantsProvider({ children }) {
     ),
   };
   return (
-    <Ctx.Provider value={{ rows, loading, counts, add, update, remove }}>
+    <Ctx.Provider
+      value={{
+        rows,
+        loading,
+        counts,
+        add,
+        update,
+        remove,
+        bulkStatus,
+        bulkRemove,
+        importRows,
+      }}
+    >
       {children}
     </Ctx.Provider>
   );

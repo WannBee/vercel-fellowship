@@ -5,18 +5,19 @@ import { useAuth } from "./context/AuthContext";
 import { ParticipantsProvider } from "./context/ParticipantsContext";
 import useIdleLogout from "./hooks/useIdleLogout";
 import Sidebar from "./components/Sidebar";
-import ParticipantList from "./pages/ParticipantList";
+import IdleWarning from "./components/IdleWarning";
 import Landing from "./pages/Landing";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import ParticipantList from "./pages/ParticipantList";
 import Dashboard from "./pages/Dashboard";
 import Profile from "./pages/Profile";
 import Roles from "./pages/Roles";
 
 function Layout() {
-  const { user, logout } = useAuth(); // logout harus ikut diambil di sini
+  const { user, logout } = useAuth();
   const [open, setOpen] = useState(false);
-  useIdleLogout(!!user, logout); // hook dipanggil sebelum return bersyarat
+  const { warning, stay } = useIdleLogout(!!user, logout); // hook dipanggil sebelum return bersyarat
   if (!user) return <Navigate to="/" replace />;
   return (
     <ParticipantsProvider>
@@ -34,6 +35,7 @@ function Layout() {
           </main>
         </div>
       </div>
+      <IdleWarning seconds={warning} onStay={stay} onLogout={logout} />
     </ParticipantsProvider>
   );
 }
