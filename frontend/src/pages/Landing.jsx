@@ -19,7 +19,6 @@ import {
   ChevronDown,
   ChevronUp,
   Users,
-  Users,
   Mail,
   Phone,
   MapPin,
