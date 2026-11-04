@@ -1,17 +1,18 @@
 import pg from "pg";
 import "dotenv/config";
-pg.types.setTypeParser(1082, (v) => v);
+
+pg.types.setTypeParser(1082, (v) => v); // kolom DATE tetap berupa teks 'YYYY-MM-DD'
 
 const raw = process.env.DATABASE_URL || "";
 const cfg = {
   ssl: raw.includes("localhost") ? false : { rejectUnauthorized: false },
   max: 3,
-  connectionTimeoutMillis: 8000, // gagal setelah 8 detik, tidak menggantung
+  connectionTimeoutMillis: 8000, // gagal dengan pesan jelas, tidak menggantung
   idleTimeoutMillis: 10000,
 };
 
 if (process.env.DB_PASSWORD) {
-  // Password dibaca dari variabel sendiri, jadi karakter khusus aman dan tidak perlu di-encode
+  // Password dibaca dari variabel sendiri (tidak perlu di-encode)
   const u = new URL(raw);
   Object.assign(cfg, {
     host: u.hostname,
@@ -25,3 +26,6 @@ if (process.env.DB_PASSWORD) {
 }
 
 export const pool = new pg.Pool(cfg);
+pool.on("error", (e) =>
+  console.error("Kesalahan koneksi database:", e.message),
+);

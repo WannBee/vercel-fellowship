@@ -9,6 +9,22 @@ import * as pub from "../controllers/publicController.js";
 const r = Router();
 const w = (fn) => (req, res, next) => fn(req, res).catch(next); // tangkap error async
 
+// Endpoint publik read-only boleh diakses dari origin mana pun. Dengan '*', respons yang
+// di-cache CDN selalu memuat header CORS, siapa pun pemanggil pertamanya.
+const openCors = (_req, res, next) => {
+  res.set("Access-Control-Allow-Origin", "*");
+  next();
+};
+
+// Diagnosa sementara (tidak memakai database). Hapus setelah masalah selesai.
+r.get("/ping", (req, res) =>
+  res.json({
+    ok: true,
+    origin: req.headers.origin || null,
+    clientUrlSet: !!process.env.CLIENT_URL,
+  }),
+);
+
 // Auth
 r.post("/auth/register", w(a.register));
 r.post("/auth/login", w(a.login));
@@ -16,9 +32,9 @@ r.get("/auth/me", auth, w(a.me));
 r.post("/auth/ping", auth, (_req, res) => res.status(204).end());
 
 // Publik (tanpa login, hanya membaca)
-r.get("/public/participants", w(pub.list));
-r.get("/public/stats", w(pub.stats));
-r.get("/public/yearly", w(pub.yearly));
+r.get("/public/participants", openCors, w(pub.list));
+r.get("/public/stats", openCors, w(pub.stats));
+r.get("/public/yearly", openCors, w(pub.yearly));
 
 // Users (rute tetap harus di atas '/users/:id')
 r.put("/users/profile", auth, w(u.updateProfile));

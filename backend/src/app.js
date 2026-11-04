@@ -11,7 +11,17 @@ const allowed = (process.env.CLIENT_URL || "")
 
 app.use(
   cors({
-    origin: (origin, cb) => cb(null, !origin || allowed.includes(origin)),
+    origin: (origin, cb) => {
+      const ok = !origin || allowed.includes(origin);
+      if (!ok)
+        console.warn(
+          "CORS ditolak untuk origin:",
+          origin,
+          "| diizinkan:",
+          allowed,
+        );
+      cb(null, ok);
+    },
     exposedHeaders: ["X-New-Token"],
   }),
 );
