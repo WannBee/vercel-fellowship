@@ -864,7 +864,8 @@ export default function Landing() {
                 <li className="flex items-start gap-2">
                   <MapPin className="w-4 h-4 mt-0.5 text-indigo-400 flex-shrink-0" />
                   <span>
-                    Jl. Fellowship No. 123, Jakarta Selatan, Indonesia
+                    Jl. Pasteur No.38, Pasteur, Kec. Sukajadi, Kota Bandung,
+                    Jawa Barat 40161
                   </span>
                 </li>
                 <li className="flex items-center gap-2">
@@ -896,10 +897,7 @@ export default function Landing() {
               <span className="text-white font-semibold">FellowshipApp</span>.
               All rights reserved.
             </p>
-            <p className="flex items-center gap-1">
-              Made with <Heart className="w-4 h-4 text-red-500 fill-red-500" />{" "}
-              in Indonesia
-            </p>
+            <p className="flex items-center gap-1">Made By Diklat RSHS</p>
           </div>
         </div>
       </footer>

@@ -24,30 +24,25 @@ const accent = {
   900: "#324c1f",
   950: "#1b2f0e",
 };
-const neutral = {
-  50: "#f6f9f9",
-  100: "#eef3f3",
-  200: "#dde6e6",
-  300: "#c3d1d1",
-  400: "#8fa3a4",
-  500: "#667c7e",
-  600: "#4b6062",
-  700: "#384a4c",
-  800: "#243436",
-  900: "#15262a",
-  950: "#0b171a",
-};
+// Skala netral memakai variabel CSS agar bisa dibalik untuk mode gelap (nilainya ada di index.css)
+const neutral = Object.fromEntries(
+  [50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 950].map((n) => [
+    n,
+    `rgb(var(--n-${n}) / <alpha-value>)`,
+  ]),
+);
 
 export default {
+  darkMode: "class",
   content: ["./index.html", "./src/**/*.{js,jsx}"],
   theme: {
     extend: {
       colors: {
-        indigo: brand, // warna utama (tombol, sidebar aktif, fokus)
-        purple: brand, // aksen lama → turquoise juga, jadi gradien tidak lagi dua warna
-        emerald: accent, // hijau terang (status Telah Lulus)
-        blue: neutral, // dulu biru → abu-abu nuansa teal
-        slate: neutral, // warna netral seluruh halaman
+        indigo: brand,
+        purple: brand,
+        emerald: accent,
+        blue: neutral,
+        slate: neutral,
       },
     },
   },

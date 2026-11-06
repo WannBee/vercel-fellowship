@@ -1,4 +1,92 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-body { @apply bg-slate-100 text-slate-700 antialiased; }
+
+:root {
+  --n-50: 246 249 249;
+  --n-100: 238 243 243;
+  --n-200: 221 230 230;
+  --n-300: 195 209 209;
+  --n-400: 143 163 164;
+  --n-500: 102 124 126;
+  --n-600: 75 96 98;
+  --n-700: 56 74 76;
+  --n-800: 36 52 54;
+  --n-900: 21 38 42;
+  --n-950: 11 23 26;
+}
+/* Mode gelap: skala netral dibalik. --surface = warna kartu (pengganti bg-white). */
+.dark {
+  color-scheme: dark;
+  --n-50: 11 23 26;
+  --n-100: 28 45 48;
+  --n-200: 43 64 67;
+  --n-300: 62 87 90;
+  --n-400: 125 146 148;
+  --n-500: 150 170 171;
+  --n-600: 176 192 193;
+  --n-700: 205 217 218;
+  --n-800: 232 238 238;
+  --n-900: 246 249 249;
+  --n-950: 255 255 255;
+  --surface: 18 33 37;
+}
+/* Elemen yang tetap memakai skala terang (mis. footer yang memang gelap) */
+.keep-scale {
+  --n-50: 246 249 249;
+  --n-100: 238 243 243;
+  --n-200: 221 230 230;
+  --n-300: 195 209 209;
+  --n-400: 143 163 164;
+  --n-500: 102 124 126;
+  --n-600: 75 96 98;
+  --n-700: 56 74 76;
+  --n-800: 36 52 54;
+  --n-900: 21 38 42;
+  --n-950: 11 23 26;
+}
+
+body {
+  @apply bg-slate-100 text-slate-700 antialiased;
+}
+
+.dark .bg-white {
+  background-color: rgb(var(--surface));
+}
+.dark .bg-white\/90 {
+  background-color: rgb(var(--surface) / 0.9);
+}
+.dark .bg-white.text-indigo-700 {
+  background-color: #ffffff;
+} /* tombol putih di hero tetap putih */
+.dark .bg-indigo-50,
+.dark .bg-purple-50 {
+  background-color: rgb(10 151 164 / 0.18);
+}
+.dark .bg-emerald-50 {
+  background-color: rgb(140 198 63 / 0.18);
+}
+.dark .bg-amber-50 {
+  background-color: rgb(245 158 11 / 0.18);
+}
+.dark .bg-rose-50 {
+  background-color: rgb(244 63 94 / 0.18);
+}
+.dark .text-indigo-600,
+.dark .text-purple-600 {
+  color: #52c7d0;
+}
+.dark .text-emerald-600 {
+  color: #a8d95c;
+}
+
+/* Peta */
+.dark .map-path[data-empty="true"] {
+  fill: rgb(var(--n-100));
+}
+.dark .map-path[data-active="false"] {
+  stroke: rgb(var(--surface));
+}
+.dark .map-path[data-active="true"] {
+  stroke: #ffffff;
+}
