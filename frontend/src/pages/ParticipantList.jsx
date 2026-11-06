@@ -12,7 +12,7 @@ import {
 } from "lucide-react";
 import API from "../services/api";
 import { ALL_LABEL, STATUS_LABEL } from "../constants/options";
-import { usePublicTheme } from "../hooks/usePublicTheme";
+import usePublicTheme from "../hooks/usePublicTheme";
 
 const TYPES = {
   status: "Status Pelatihan",
