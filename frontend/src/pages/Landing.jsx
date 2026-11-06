@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import IndonesiaMap from "../components/IndonesiaMap";
 import { Link } from "react-router-dom";
-import { LineChart, DonutChart } from "../components/TrendCharts";
+import { LineChart, DonutChart } from "../components/TrendChart";
 import {
   AnnouncementSection,
   AboutSection,
