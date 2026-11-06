@@ -345,6 +345,15 @@ function useCountUp(target, duration = 800) {
 }
 
 // ---------- Halaman ----------
+// Ganti href dengan alamat akun resmi. Ikon generik dipakai karena versi baru lucide-react tidak lagi menyediakan logo merek.
+const SOCIALS = [
+  { label: "Facebook", icon: Share2, href: "#" },
+  { label: "Twitter", icon: MessageCircle, href: "#" },
+  { label: "Instagram", icon: Camera, href: "#" },
+  { label: "YouTube", icon: Play, href: "#" },
+  { label: "LinkedIn", icon: Briefcase, href: "#" },
+  { label: "GitHub", icon: Code, href: "#" },
+];
 export default function Landing() {
   const { user } = useAuth();
   const [expired, setExpired] = useState(
@@ -658,49 +667,22 @@ export default function Landing() {
                 bersama dalam iman, pelayanan, dan persaudaraan.
               </p>
               {/* Social Media Icons */}
+              {/* Social Media Icons */}
               <div className="flex items-center gap-3">
-                <a
-                  href="#"
-                  aria-label="Facebook"
-                  className="w-9 h-9 flex items-center justify-center rounded-full bg-slate-800 hover:bg-indigo-500 text-slate-400 hover:text-white transition-colors"
-                >
-                  <Facebook className="w-4 h-4" />
-                </a>
-                <a
-                  href="#"
-                  aria-label="Twitter"
-                  className="w-9 h-9 flex items-center justify-center rounded-full bg-slate-800 hover:bg-indigo-500 text-slate-400 hover:text-white transition-colors"
-                >
-                  <Twitter className="w-4 h-4" />
-                </a>
-                <a
-                  href="#"
-                  aria-label="Instagram"
-                  className="w-9 h-9 flex items-center justify-center rounded-full bg-slate-800 hover:bg-indigo-500 text-slate-400 hover:text-white transition-colors"
-                >
-                  <Instagram className="w-4 h-4" />
-                </a>
-                <a
-                  href="#"
-                  aria-label="Youtube"
-                  className="w-9 h-9 flex items-center justify-center rounded-full bg-slate-800 hover:bg-indigo-500 text-slate-400 hover:text-white transition-colors"
-                >
-                  <Youtube className="w-4 h-4" />
-                </a>
-                <a
-                  href="#"
-                  aria-label="Linkedin"
-                  className="w-9 h-9 flex items-center justify-center rounded-full bg-slate-800 hover:bg-indigo-500 text-slate-400 hover:text-white transition-colors"
-                >
-                  <Linkedin className="w-4 h-4" />
-                </a>
-                <a
-                  href="#"
-                  aria-label="Github"
-                  className="w-9 h-9 flex items-center justify-center rounded-full bg-slate-800 hover:bg-indigo-500 text-slate-400 hover:text-white transition-colors"
-                >
-                  <Github className="w-4 h-4" />
-                </a>
+                {SOCIALS.map(({ label, icon: Icon, href }) => (
+                  <a
+                    key={label}
+                    href={href}
+                    aria-label={label}
+                    {...(href !== "#" && {
+                      target: "_blank",
+                      rel: "noopener noreferrer",
+                    })}
+                    className="w-9 h-9 flex items-center justify-center rounded-full bg-slate-800 hover:bg-indigo-500 text-slate-400 hover:text-white transition-colors"
+                  >
+                    <Icon className="w-4 h-4" />
+                  </a>
+                ))}
               </div>
             </div>
 
@@ -712,7 +694,10 @@ export default function Landing() {
               <p className="text-sm mb-4">
                 Dapatkan update terbaru langsung ke email kamu.
               </p>
-              <form className="flex items-center gap-2 md:justify-end">
+              <form
+                className="flex items-center gap-2 md:justify-end"
+                onSubmit={(e) => e.preventDefault()}
+              >
                 <input
                   type="email"
                   placeholder="Email kamu..."
