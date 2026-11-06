@@ -43,7 +43,8 @@ export const FAQS = [
 ];
 
 export const CONTACT = {
-  address: "Alamat institusi (isi dengan alamat sebenarnya)",
+  address:
+    "Jl. Pasteur No.38, Pasteur, Kec. Sukajadi, Kota Bandung, Jawa Barat 40161",
   phone: "+62 21 0000 0000",
   email: "info@example.com",
   hours: "Senin – Jumat, 08.00 – 16.00 WIB",
