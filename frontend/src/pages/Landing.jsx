@@ -1,6 +1,15 @@
 import { useEffect, useState } from "react";
 import IndonesiaMap from "../components/IndonesiaMap";
 import { Link } from "react-router-dom";
+import { LineChart, DonutChart } from "../components/TrendCharts";
+import {
+  AnnouncementSection,
+  AboutSection,
+  FaqSection,
+  ContactSection,
+} from "../components/LandingSections";
+import usePublicTheme from "../hooks/usePublicTheme";
+import useScrollRestore from "../hooks/useScrollRestore";
 import {
   LogIn,
   LayoutDashboard,
@@ -29,6 +38,8 @@ import {
   Code,
   Play,
   Send,
+  Sun,
+  Moon,
   Heart,
 } from "lucide-react";
 import API from "../services/api";
@@ -365,6 +376,7 @@ export default function Landing() {
   const [yearly, setYearly] = useState({});
   const [ksmYear, setKsmYear] = useState("all");
   const [fellowshipYear, setFellowshipYear] = useState("all");
+  const { dark, toggle } = usePublicTheme();
 
   useEffect(() => {
     API.get("/api/public/stats")
@@ -381,6 +393,8 @@ export default function Landing() {
       ),
     ).then((entries) => setYearly(Object.fromEntries(entries)));
   }, []);
+  const ready = (s !== null || error) && Object.keys(yearly).length > 0;
+  useScrollRestore(ready);
 
   const st = s?.status || {};
   const fellowships = showAll ? FELLOWSHIP : FELLOWSHIP.slice(0, 12);
@@ -404,27 +418,57 @@ export default function Landing() {
   return (
     <div className="min-h-screen bg-slate-50">
       <header className="sticky top-0 z-20 bg-white/90 backdrop-blur border-b border-slate-200">
-        <div className="max-w-7xl mx-auto flex items-center justify-between px-4 py-3">
+        <div className="max-w-7xl mx-auto flex items-center justify-between gap-3 px-4 py-3">
           <div className="flex items-center gap-2 font-bold text-slate-800">
             <Users className="w-6 h-6 text-indigo-600" />
             FellowshipApp
           </div>
-          <Link
-            to={user ? "/dashboard" : "/login"}
-            className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold bg-indigo-600 text-white hover:bg-indigo-700 shadow-md shadow-indigo-600/20"
-          >
-            {user ? (
-              <>
-                <LayoutDashboard className="w-4 h-4" />
-                Dashboard
-              </>
-            ) : (
-              <>
-                <LogIn className="w-4 h-4" />
-                Masuk
-              </>
-            )}
-          </Link>
+          <nav className="hidden lg:flex items-center gap-6 text-sm font-medium text-slate-600">
+            {[
+              ["#statistik", "Statistik"],
+              ["#pengumuman", "Pengumuman"],
+              ["#tentang", "Tentang"],
+              ["#faq", "FAQ"],
+              ["#kontak", "Kontak"],
+            ].map(([href, label]) => (
+              <a
+                key={href}
+                href={href}
+                className="hover:text-indigo-600 transition-colors"
+              >
+                {label}
+              </a>
+            ))}
+          </nav>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={toggle}
+              aria-label={dark ? "Aktifkan mode terang" : "Aktifkan mode gelap"}
+              className="p-2.5 rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-50"
+            >
+              {dark ? (
+                <Sun className="w-4 h-4" />
+              ) : (
+                <Moon className="w-4 h-4" />
+              )}
+            </button>
+            <Link
+              to={user ? "/dashboard" : "/login"}
+              className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold bg-indigo-600 text-white hover:bg-indigo-700 shadow-md shadow-indigo-600/20"
+            >
+              {user ? (
+                <>
+                  <LayoutDashboard className="w-4 h-4" />
+                  Dashboard
+                </>
+              ) : (
+                <>
+                  <LogIn className="w-4 h-4" />
+                  Masuk
+                </>
+              )}
+            </Link>
+          </div>
         </div>
       </header>
 
@@ -548,6 +592,22 @@ export default function Landing() {
               rows={yearly.status || []}
               series={STATUS_SERIES}
             />
+            <div className="grid lg:grid-cols-3 gap-5">
+              <div className="lg:col-span-2">
+                <LineChart
+                  title="Tren Peserta per Status"
+                  rows={yearly.status || []}
+                  series={STATUS_SERIES}
+                />
+              </div>
+              <DonutChart
+                title="Komposisi Status"
+                parts={STATUS_SERIES.map((x) => ({
+                  ...x,
+                  value: st[x.key] || 0,
+                }))}
+              />
+            </div>
           </Section>
         </div>
         <Section
@@ -650,9 +710,13 @@ export default function Landing() {
             barClass="bg-emerald-500"
           />
         </Section>
+        <AnnouncementSection />
+        <AboutSection />
+        <FaqSection />
+        <ContactSection />
       </main>
 
-      <footer className="bg-slate-900 text-slate-400">
+      <footer className="keep-scale bg-slate-900 text-slate-400">
         <div className="max-w-7xl mx-auto px-4 py-12">
           {/* Top Section: Brand + Newsletter */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pb-8 border-b border-slate-800">

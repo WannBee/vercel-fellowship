@@ -7,9 +7,12 @@ import {
   ChevronRight,
   Search,
   X,
+  Sun,
+  Moon,
 } from "lucide-react";
 import API from "../services/api";
 import { ALL_LABEL, STATUS_LABEL } from "../constants/options";
+import { usePublicTheme } from "../hooks/usePublicTheme";
 
 const TYPES = {
   status: "Status Pelatihan",
@@ -25,7 +28,7 @@ const badge = {
   "telah lulus": "bg-emerald-100 text-emerald-700 border-emerald-200",
 };
 
-function List({ by, value }) {
+function List({ by, value, theme }) {
   const nav = useNavigate();
   const loc = useLocation();
   const [page, setPage] = useState(1);
@@ -94,9 +97,24 @@ function List({ by, value }) {
             <ArrowLeft className="w-4 h-4" />
             Kembali
           </button>
-          <div className="flex items-center gap-2 font-bold text-slate-800">
-            <Users className="w-5 h-5 text-indigo-600" />
-            FellowshipApp
+          <div className="flex items-center gap-3">
+            <button
+              onClick={theme.toggle}
+              aria-label={
+                theme.dark ? "Aktifkan mode terang" : "Aktifkan mode gelap"
+              }
+              className="p-2 rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-50"
+            >
+              {theme.dark ? (
+                <Sun className="w-4 h-4" />
+              ) : (
+                <Moon className="w-4 h-4" />
+              )}
+            </button>
+            <div className="flex items-center gap-2 font-bold text-slate-800">
+              <Users className="w-5 h-5 text-indigo-600" />
+              FellowshipApp
+            </div>
           </div>
         </div>
       </header>
@@ -220,8 +238,8 @@ function List({ by, value }) {
 
 export default function ParticipantList() {
   const [sp] = useSearchParams();
+  const theme = usePublicTheme(); // di sini (bukan di List) agar tema tidak berkedip saat kategori berganti
   const by = TYPES[sp.get("by")] ? sp.get("by") : null;
   const value = by ? sp.get("value") || "" : "";
-  // key membuat halaman (termasuk kolom pencarian) diatur ulang kalau kategori berubah
-  return <List key={`${by}:${value}`} by={by} value={value} />;
+  return <List key={`${by}:${value}`} by={by} value={value} theme={theme} />;
 }

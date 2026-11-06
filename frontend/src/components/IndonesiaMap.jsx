@@ -177,13 +177,13 @@ export default function IndonesiaMap({ data }) {
       </div>
 
       {failed ? (
-        <p className="text-center text-sm text-rose-500 py-16">
+        <div className="aspect-[12/5] flex items-center justify-center text-center text-sm text-rose-500 px-4">
           Peta belum bisa dimuat: {failed}
-        </p>
+        </div>
       ) : !geo ? (
-        <p className="text-center text-sm text-slate-400 py-16">
+        <div className="aspect-[12/5] flex items-center justify-center text-sm text-slate-400">
           Memuat peta...
-        </p>
+        </div>
       ) : paths.length === 0 ? (
         <p className="text-center text-sm text-amber-600 py-16">
           File terbaca ({geo.features.length} fitur), tetapi tidak ada bentuk
@@ -205,7 +205,9 @@ export default function IndonesiaMap({ data }) {
                 fill={fill(n)}
                 stroke={active ? "#1e293b" : "#ffffff"}
                 strokeWidth={active ? 1.4 : 0.6}
-                className={`transition-colors ${n ? "cursor-pointer" : "cursor-default"}`}
+                data-empty={n ? "false" : "true"}
+                data-active={active ? "true" : "false"}
+                className={`map-path transition-colors ${n ? "cursor-pointer" : "cursor-default"}`}
                 onMouseEnter={() => setHover({ name: p.name, count: n })}
                 onClick={() =>
                   canHover
