@@ -126,6 +126,7 @@ const InfoCard = ({ label, value, icon: Icon, tone = "indigo", to }) => {
   const shown = useCountUp(value);
   return (
     <Link
+      id="infoPeserta"
       to={to}
       title={`${label}: lihat daftar peserta`}
       className="group relative h-48 flex flex-col rounded-2xl p-4 border border-slate-200 bg-white shadow-sm cursor-pointer transition-all duration-300 hover:shadow-lg hover:-translate-y-1 hover:border-transparent hover:bg-gradient-to-br hover:from-indigo-600 hover:to-purple-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
@@ -546,6 +547,7 @@ export default function Landing() {
 
         <div className="-mt-20">
           <Section
+            id="fellow"
             onDark
             title="Peserta Fellowship"
             desc="Data berikut merupakan total keseluruhan peserta, baik yang sudah mengikuti/menyelesaikan fellowship, peserta yang sedang melakukan pendidikan, peserta yang akan melakukan pendidikan dan pesrta yang Cuti kegiatan"
@@ -786,7 +788,7 @@ export default function Landing() {
               <ul className="space-y-2 text-sm">
                 <li>
                   <a
-                    href="#"
+                    href="#home"
                     className="hover:text-indigo-400 transition-colors"
                   >
                     Tentang Kami
@@ -833,7 +835,7 @@ export default function Landing() {
               <ul className="space-y-2 text-sm">
                 <li>
                   <a
-                    href="#"
+                    href="#fellow"
                     className="hover:text-indigo-400 transition-colors"
                   >
                     Fellowship
@@ -880,7 +882,7 @@ export default function Landing() {
               <ul className="space-y-2 text-sm">
                 <li>
                   <a
-                    href="#"
+                    href="#faq"
                     className="hover:text-indigo-400 transition-colors"
                   >
                     FAQ
@@ -938,16 +940,16 @@ export default function Landing() {
                     href="tel:+62211234567"
                     className="hover:text-indigo-400 transition-colors"
                   >
-                    +62 21 1234 567
+                    +62 822 1234 5678
                   </a>
                 </li>
                 <li className="flex items-center gap-2">
                   <Mail className="w-4 h-4 text-indigo-400 flex-shrink-0" />
                   <a
-                    href="mailto:hello@fellowshipapp.com"
+                    href="mailto:info@diklatrshs-sirs.com"
                     className="hover:text-indigo-400 transition-colors"
                   >
-                    hello@fellowshipapp.com
+                    info@diklatrshs-sirs.com
                   </a>
                 </li>
               </ul>
