@@ -2,7 +2,9 @@ const LOREM =
   "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.";
 
 export const ABOUT = {
-  paragraphs: [LOREM, LOREM],
+  paragraphs: [
+    "Program pelatihan ini dirancang untuk memberikan pemahaman mendalam mengenai aspek teknis dan operasional melalui pendekatan On The Job Training (OJT) dan In-House Training (IHT). Peserta akan mempelajari teknik operasional, strategi pelayanan, serta pengembangan soft skills yang relevan dengan kebutuhan lapangan. Metode pembelajaran menggabungkan teori, praktik langsung, dan simulasi kasus nyata. Dengan materi yang terus diperbarui serta metode pembelajaran yang interaktif, Diklit RSHS berkomitmen mencetak generasi yang siap menghadapi tantangan global. Setiap sesi dirancang untuk menginspirasi semangat belajar dan memacu prestasi.",
+  ],
   highlights: [
     { key: "visi", title: "Visi", text: LOREM },
     { key: "misi", title: "Misi", text: LOREM },
